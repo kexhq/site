@@ -39,11 +39,11 @@ end`,
 end
 
 make Vector2D do
-  let +(other: Vector2D) -> Vector2D do
+  let +(other: This) -> This do
     return Vector2D { x: @x + other.x, y: @y + other.y }
   end
 
-  let *(factor: Float) -> Vector2D do
+  let *(factor: Float) -> This do
     return Vector2D { x: @x * factor, y: @y * factor }
   end
 
