@@ -68,17 +68,17 @@ end`,
       "Branch on a tuple of remainders with guards and wildcards — readable from top to bottom.",
     category: "Control",
     source: "examples/fizzbuzz_pattern_matching.kex",
-    code: `let fizzBuzz(n: Int) -> String do
+    code: `let fizzBuzz(n: Integer) -> String do
   match (n.modulo(3), n.modulo(5)) do
     (0, 0) -> "FizzBuzz"
     (0, _) -> "Fizz"
     (_, 0) -> "Buzz"
-    (_, _) -> "\${n}"
+    (_, _) -> n.to(String)
   end
 end
 
 main do
-  (1..15).map(&fizzBuzz).each { |s| IO.printLine(s) }
+  (1..15).map(&.fizzBuzz).each { |s| IO.printLine(s) }
 end`,
     output: `1
 2
@@ -131,19 +131,34 @@ end`,
       "Pure code can’t call foul code. The compiler rejects it before the program ever runs.",
     category: "Effects",
     source: "README.md",
-    code: `let compute(x: Int) = x * 2 + 1
+    code:
+      `# Pure function, no side effects, can be called from anywhere
+let wordCountFrom(lines: String[]) -> Integer do
+  let words = lines.map do |line|
+    line.split(" ").count { |w| !w.empty? }  # words per line
+  end
 
-foul readConfig(path: String) do
-  return File.read(path)
+  words.sum
+end
+      
+# A foul, impure function with side-effect.
+# Must be called from other foul functions.
+foul wordCount(path: String) -> [Integer] do
+  return if !File.exists?(path)
+
+  let file_lines = File.lines(path).or([])
+
+  let words = wordCountFrom(lines: file_lines)
+  let lines = file_lines.count
+  let bytes = File.size(path).or(0)
+
+  [lines, words, bytes]
 end
 
-# Compile error: pure code cannot call foul code.
-# let bad(path: String) = readConfig(path)
+# ...
+`
 
-main do
-  IO.printLine(compute(21).to(String))
-end`,
-    output: "43",
+
   },
   {
     slug: "streams",
@@ -152,15 +167,15 @@ end`,
       "Build the naturals, filter into primes, and take only what you need — nothing runs until you consume it.",
     category: "Control",
     source: "examples/streams.kex",
-    code: `let naturals = Stream.Sequence(from: 0) { |n| n + 1 }
+    code: `let naturals = Stream.Sequence(from: 0) { | n | n + 1 }
 
-let primes = Stream.Sequence(from: 2) { |n| n + 1 }
-  .filter do |n|
-    (2..n - 1).all? { |d| n.modulo(d) != 0 }
-  end
+let primes = Stream.Sequence(from: 2) { | n | n + 1 }
+  .filter do | n |
+  (2..n - 1).all ? { | d | n.modulo(d) != 0 }
+end
 
 main do
-  primes.take(8).each { |p| IO.printLine(p.to(String)) }
+  primes.take(8).each { | p | IO.printLine(p.to(String)) }
 end`,
     output: `2
 3
@@ -181,13 +196,13 @@ end`,
     code: `let add(a, b) = a + b
 let multiply(a, b) = a * b
 
-let inc    = ~add(1)
+let inc = ~add(1)
 let double = ~multiply(2)
 
 main do
   IO.printLine([1, 2, 3].map(~multiply(10)).to(String))
   IO.printLine((1..100).reduce(0, ~(+)).to(String))
-  IO.printLine(inc(41).to(String))
+IO.printLine(inc(41).to(String))
 end`,
     output: `[10, 20, 30]
 5050
@@ -201,17 +216,18 @@ end`,
     category: "Types",
     source: "examples/traits.kex",
     code: `trait Shape do
-  area      : () -> Float
-  perimeter : () -> Float
-  let describe = "area=\${this.area}"
+  area :> Float
+  perimeter :> Float
+
+  let describe = "area=\${this.area}" # default implementation
 end
 
 record Circle do
-  radius : Float
+  radius: Float
 end
 
 make Circle, implement: Shape do
-  let area      = Math.PI * @radius * @radius
+  let area = Math.PI * @radius * @radius
   let perimeter = 2.0 * Math.PI * @radius
 end
 
@@ -232,10 +248,10 @@ end`,
   var list = [1, 2, 3, 4, 5]
 
   list.push!(6)
-  list.filter!(&.even?)
-  list.map! { |x| x * 10 }
+  list.filter!(&.even ?)
+list.map! { | x | x * 10 }
 
-  IO.printLine(list.to(String))
+IO.printLine(list.to(String))
 end`,
     output: "[20, 40, 60]",
   },
@@ -247,19 +263,19 @@ end`,
     category: "DSL",
     source: "README.md",
     code: `let app = Http.routes do
-  get "/" do |req|
-    Response.ok("Welcome")
+  get "/" do | req |
+  Response.ok("Welcome")
   end
 
-  get "/users/:id" do |req|
-    match UserService.find(req.params.id) do
-      Just(user) -> Response.json(user)
-      None       -> Response.notFound("user not found")
+  get "/users/:id" do | req |
+  match UserService.find(req.params.id) do
+  Just(user) -> Response.json(user)
+      None -> Response.notFound("user not found")
     end
-  end
+end
 
-  post "/users" do |req|
-    let user = UserService.create(req.body)?
+  post "/users" do | req |
+  let user = UserService.create(req.body) ?
     Response.created(user)
   end
 end`,
