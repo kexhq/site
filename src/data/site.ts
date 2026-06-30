@@ -4,7 +4,7 @@
  * If the project moves (e.g. under the `kex` org), change `REPO` here and
  * every link across the site updates with it.
  */
-export const REPO = "https://github.com/akoskovacs/kex";
+export const REPO = "https://github.com/kexhq/kex";
 export const REPO_BRANCH = "main";
 
 const strip = (p: string) => p.replace(/^\/+/, "");
