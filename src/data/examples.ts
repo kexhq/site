@@ -78,7 +78,7 @@ end`,
 end
 
 main do
-  (1..15).map(&.fizzBuzz).each { |s| IO.printLine(s) }
+  (1..100).map(&.fizzBuzz).each { |s| IO.printLine(s) }
 end`,
     output: `1
 2
@@ -89,12 +89,7 @@ Fizz
 7
 8
 Fizz
-Buzz
-11
-Fizz
-13
-14
-FizzBuzz`,
+...`,
   },
   {
     slug: "result",
