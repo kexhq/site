@@ -27,6 +27,50 @@ end`,
     output: "Hello, world!",
   },
   {
+    slug: "fact",
+    title: "Pattern matching with functions",
+    tagline: "Might be your first introduction to functional pattern matching...",
+    category: "Basics",
+    source: "examples/fact.kex",
+    code: `factorial : Integer -> Integer
+let factorial(1) = 1
+let factorial(n) = n * factorial(n - 1)
+
+main do
+  IO.printLine(factorial(4))
+end`,
+    output: "24",
+  },
+  {
+    slug: "makepat",
+    title: "Pattern matching on the first parameter",
+    tagline: "Might be your first real Kexample.",
+    category: "Basics",
+    source: "examples/head.kex",
+    code: `make [X] do
+  head :> X?
+  let head(@[]) = None
+  let head(@[x | _]) = Just(x)
+
+  rest :> This
+  let rest(@[]) = []
+  let rest(@[_ | xs]) = xs
+end
+
+main do
+  let list = [1, 2, 3]
+  IO.printLine(list.head)   # same as: head(list)
+  IO.printLine(head([]))    # same as: [].head
+
+  IO.printLine(list.rest)
+end
+`,
+    output: `Just(1)
+None
+[2, 3]
+    `,
+  },
+  {
     slug: "vectors",
     title: "Records, operators, UFCS",
     tagline:
@@ -102,9 +146,11 @@ Fizz
 
 let parsePort(s: String) -> Result<Int, ParseError> do
   return Error(EmptyInput) if s.empty?
+
   match Integer.parse(s) do
     Ok(n)    -> do
       return Error(Overflow) if n > 65535
+
       return Ok(n)
     end
     Error(_) -> Error(InvalidFormat(s))
@@ -228,26 +274,28 @@ end`,
   },
   {
     slug: "router",
-    title: "DSL-friendly routers",
+    title: "DSL-friendly language",
     tagline:
       "Block args make library code read like language keywords — routing included.",
     category: "DSL",
     source: "README.md",
     code: `let app = Http.routes do
-  get "/" do | req |
-  Response.ok("Welcome")
+  get "/" do |req|
+    Response.ok("Welcome")
   end
 
-  get "/users/:id" do | req |
-  match UserService.find(req.params.id) do
-  Just(user) -> Response.json(user)
+  get "/users/:id" do |req|
+    match UserService.find(req.params.id) do
+      Just(user) -> Response.json(user)
       None -> Response.notFound("user not found")
     end
-end
+  end
 
-  post "/users" do | req |
-  let user = UserService.create(req.body) ?
-    Response.created(user)
+  post "/users" do |req|
+    let user = UserService.create(req.body)
+    return Response.created(user) if user.ok?
+
+    return Response.error("error while creating user")
   end
 end`,
   },

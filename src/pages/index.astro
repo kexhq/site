@@ -7,7 +7,7 @@ import { REPO } from "~/data/site";
 const heroExample = EXAMPLES.find((e) => e.slug === "vectors")!;
 const purityExample = EXAMPLES.find((e) => e.slug === "purity")!;
 const fizzbuzzExample = EXAMPLES.find((e) => e.slug === "fizzbuzz")!;
-const streamExample = EXAMPLES.find((e) => e.slug === "streams")!;
+const traitExample = EXAMPLES.find((e) => e.slug === "traits")!;
 
 // "Why kex" feature blocks — echoing the Ruby site's big extralight titles.
 const WHY = [
@@ -29,7 +29,7 @@ const WHY = [
   {
     title: "Traits",
     line: "Contracts with defaults, behavior without classes.",
-    body: "Declare required methods and ship default implementations. make X implement: Trait pulls them in and you override individual methods where you want.",
+    body: "Declare required methods and ship default implementations. make X implement: Trait pulls them in and you override individual methods where you need.",
   },
 ];
 ---
@@ -67,9 +67,12 @@ const WHY = [
       <p
         class="mx-auto mt-5 max-w-2xl text-[17px] leading-relaxed text-[var(--color-muted)]"
       >
-        Types like Haskell, code like Ruby, scale like Erlang or Elixir. <code
-          >Just</code
-        > without the <code>null</code>s and <code>nil</code>s.
+        Type like Haskell, code like Ruby, scale like Erlang.
+      </p>
+      <p
+        class="mx-auto max-w-2xl mt-1 text-[17px] leading-relaxed text-[var(--color-muted)]"
+      >
+        <code>Just</code> without the <code>null</code>s and <code>nil</code>s.
       </p>
 
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -87,7 +90,7 @@ const WHY = [
         </a>
       </div>
 
-      <p class="mt-5 font-mono text-[12.5px] text-[var(--color-faint)]">
+      <p class="mt-6 font-mono text-[12.5px] text-[var(--color-faint)]">
         v0.1-prealpha · MIT licensed · C++20
       </p>
     </div>
@@ -222,29 +225,23 @@ const WHY = [
       <h2
         class="text-[24px] font-bold tracking-[-0.01em] text-[var(--color-ink)]"
       >
-        Lazy streams and ranges
+        Traits and make blocks
       </h2>
       <p
         class="mt-3 max-w-md text-[15.5px] leading-relaxed text-[var(--color-muted)]"
       >
-        Ranges and infinite streams share collection-style operations. Compose
-        first — <code class="font-mono text-[14px] text-[var(--color-ink-soft)]"
-          >filter</code
-        >,
+        Collect logically similar functions into one place. Use them just like
+        an object, but better! Define common behaviour with traits, implement
+        them under
         <code class="font-mono text-[14px] text-[var(--color-ink-soft)]"
-          >map</code
-        >,
-        <code class="font-mono text-[14px] text-[var(--color-ink-soft)]"
-          >all?</code
-        > — and pull only what you need with <code
-          class="font-mono text-[14px] text-[var(--color-ink-soft)]">take</code
-        >.
+          >make</code
+        > blocks. Mimic inheritance just like in OOP without the mess.
       </p>
     </div>
     <Code
-      code={streamExample.code}
-      output={streamExample.output}
-      file="streams.kex"
+      code={traitExample.code}
+      output={traitExample.output}
+      file="traits.kex"
     />
   </section>
 
@@ -260,8 +257,9 @@ const WHY = [
         <p
           class="mt-3 max-w-sm text-[15px] leading-relaxed text-[var(--color-muted)]"
         >
-          The compiler is written in C++20 with no external runtime
-          dependencies. Requires CMake 3.20+ and a C++20 compiler.
+          The compiler is written in C++20 with minimal external runtime
+          dependencies. Requires <code class="text-[14px]">CMake 3.20+</code> and
+          a <code class="text-[14px]">C++20</code> compiler.
         </p>
         <a
           href="/install"

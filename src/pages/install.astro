@@ -7,15 +7,20 @@ import { REPO } from "~/data/site";
   title="Install — kex"
   description="Build and install the kex compiler from source. Requires CMake 3.20+ and a C++20 compiler."
 >
-  <section class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]">
+  <section
+    class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]"
+  >
     <div class="container-page py-14">
-      <h1 class="text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]">
+      <h1
+        class="text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]"
+      >
         Install
       </h1>
-      <p class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]">
-        The compiler is written in C++20 with no external runtime dependencies
-        beyond the standard library (and optional readline). Build it, run a
-        file, or drop into the REPL.
+      <p
+        class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]"
+      >
+        The compiler is written in C++20 with minimal runtime dependencies.
+        Build it, run a file, or drop into the REPL.
       </p>
     </div>
   </section>
@@ -24,35 +29,66 @@ import { REPO } from "~/data/site";
     <div class="mx-auto max-w-2xl space-y-12">
       <div>
         <div class="mb-3 flex items-center gap-3">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]">1</span>
-          <h2 class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]">Clone the repo</h2>
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]"
+            >1</span
+          >
+          <h2
+            class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]"
+          >
+            Clone the repo
+          </h2>
         </div>
-        <div class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]">
-          <pre class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">git</span> clone {REPO}.git
+        <div
+          class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]"
+        >
+          <pre
+            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">git</span> clone {REPO}.git
 <span class="tok-fn">cd</span> kex</code></pre>
         </div>
       </div>
 
       <div>
         <div class="mb-3 flex items-center gap-3">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]">2</span>
-          <h2 class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]">Build</h2>
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]"
+            >2</span
+          >
+          <h2
+            class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]"
+          >
+            Build
+          </h2>
         </div>
         <p class="mb-3 text-[15px] text-[var(--color-muted)]">
-          Requires CMake 3.20+ and a C++20 compiler (clang, gcc, or Apple clang).
+          Requires CMake 3.20+ and a C++20 compiler (clang, gcc, or Apple
+          clang).
         </p>
-        <div class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]">
-          <pre class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">make</span> build          <span class="tok-comment"># produces ./build/kex</span></code></pre>
+        <div
+          class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]"
+        >
+          <pre
+            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">make</span> build          <span class="tok-comment"># produces ./build/kex</span></code></pre>
         </div>
       </div>
 
       <div>
         <div class="mb-3 flex items-center gap-3">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]">3</span>
-          <h2 class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]">Run it</h2>
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]"
+            >3</span
+          >
+          <h2
+            class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]"
+          >
+            Run it
+          </h2>
         </div>
-        <div class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]">
-          <pre class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">make</span> run F=examples/fizzbuzz.kex
+        <div
+          class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]"
+        >
+          <pre
+            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">make</span> run F=examples/fizzbuzz.kex
 <span class="tok-fn">make</span> repl                       <span class="tok-comment"># drop into the REPL</span>
 build/kex examples/vectors_advanced.kex</code></pre>
         </div>
@@ -60,23 +96,41 @@ build/kex examples/vectors_advanced.kex</code></pre>
 
       <div>
         <div class="mb-3 flex items-center gap-3">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]">4</span>
-          <h2 class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]">Install (optional)</h2>
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-mono text-[13px] font-semibold text-[var(--color-accent-strong)]"
+            >4</span
+          >
+          <h2
+            class="text-[20px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]"
+          >
+            Install (optional)
+          </h2>
         </div>
         <p class="mb-3 text-[15px] text-[var(--color-muted)]">
-          Copies the built binary to a path on your <code class="font-mono text-[14px] text-[var(--color-ink)]">PATH</code>. It intentionally does not build as root.
+          Copies the built binary to a path on your <code
+            class="font-mono text-[14px] text-[var(--color-ink)]">PATH</code
+          >. It intentionally does not build as root.
         </p>
-        <div class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]">
-          <pre class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">sudo</span> make install              <span class="tok-comment"># /usr/local/bin/kex</span>
+        <div
+          class="surface-code overflow-hidden rounded-xl border border-[var(--color-code-border)]"
+        >
+          <pre
+            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#d6d6e6]"><code><span class="tok-fn">sudo</span> make install              <span class="tok-comment"># /usr/local/bin/kex</span>
 make install PREFIX=$HOME/.local   <span class="tok-comment"># install elsewhere</span></code></pre>
         </div>
       </div>
 
-      <div class="rounded-2xl border border-[var(--color-line)] bg-[var(--color-bg-subtle)] p-6">
-        <h3 class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">
+      <div
+        class="rounded-2xl border border-[var(--color-line)] bg-[var(--color-bg-subtle)] p-6"
+      >
+        <h3
+          class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]"
+        >
           Make targets
         </h3>
-        <ul class="mt-3 grid gap-x-8 gap-y-1.5 font-mono text-[13px] sm:grid-cols-2">
+        <ul
+          class="mt-3 grid gap-x-8 gap-y-1.5 font-mono text-[13px] sm:grid-cols-2"
+        >
           {
             [
               ["make build", "build the compiler"],
@@ -90,7 +144,9 @@ make install PREFIX=$HOME/.local   <span class="tok-comment"># install elsewhere
             ].map(([cmd, desc]) => (
               <li class="flex flex-col gap-0.5 border-b border-[var(--color-line)] py-1.5">
                 <span class="text-[var(--color-accent-strong)]">{cmd}</span>
-                <span class="font-sans text-[12.5px] text-[var(--color-muted)]">{desc}</span>
+                <span class="font-sans text-[12.5px] text-[var(--color-muted)]">
+                  {desc}
+                </span>
               </li>
             ))
           }
