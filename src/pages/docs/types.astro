@@ -3,18 +3,24 @@ import DocsLayout from "~/layouts/DocsLayout.astro";
 import Code from "~/components/Code.astro";
 ---
 
-<DocsLayout title="Types" current="types" description="Records, sum types, Optional, and Result in kex.">
+<DocsLayout
+  title="Types"
+  current="types"
+  description="Records, sum types, Optional, and Result in kex."
+>
   <h1>Types</h1>
 
   <p>
     Kex models data directly: <strong>records</strong> for product types,
-    <strong><code>type</code></strong> for unions, <strong><code>?</code></strong>
-    for optional values, and <strong><code>Result</code></strong> for fallible
-    flows.
+    <strong><code>type</code></strong> for unions, <strong
+      ><code>?</code></strong
+    >
+    for optional values, and <strong><code>Result</code></strong> for fallible flows.
   </p>
 
   <h2>Records</h2>
-  <Code code={`record Temperature do
+  <Code
+    code={`record Temperature do
   celsius : Float
 
   static do
@@ -22,10 +28,15 @@ import Code from "~/components/Code.astro";
   end
 end
 
-let boiling = Temperature { celsius: 100.0 }`} file="record.kex" />
+let boiling = Temperature { celsius: 100.0 }
+let freezing = Temperature.Freezing
+`}
+    file="record.kex"
+  />
 
   <h2>Sum types</h2>
-  <Code code={`type ParseError = InvalidFormat(String) | Overflow | EmptyInput
+  <Code
+    code={`type ParseError = InvalidFormat(String) | Overflow | EmptyInput
 
 let describe(e: ParseError) -> String do
   match e do
@@ -33,21 +44,36 @@ let describe(e: ParseError) -> String do
     Overflow         -> "out of range"
     EmptyInput       -> "got nothing"
   end
-end`} file="union.kex" />
+end`}
+    file="union.kex"
+  />
 
   <h2>Optional</h2>
   <p>
     <code>T?</code> is sugar for an optional value. Constructors are
-    <code>Just(value)</code> and <code>None</code>. <code>flatMap</code> chains
-    optional computations.
+    <code>Just(value)</code> and <code>None</code>. <code>flatMap</code> chains optional
+    computations.
   </p>
-  <Code code={`let findUser(users, name) -> User? do
+  <Code
+    code={`# Using bare Optional<T>
+let findUserTodo(todos, user, todo) -> Optional<Todo>
+  let todo = todos.find { |t| t.id == todo.id }
+  return None if todo.userId != user.id
+
+  return Just(todo)
+end
+
+# Using T? sugar
+let findUser(users, name) -> User? do
   return users.find { |u| u.name == name }
 end
 
+
 let email = users
   .find(&.adult?)
-  .flatMap(&.email)        # String?`} file="optional.kex" />
+  .flatMap(&.email)        # String?`}
+    file="optional.kex"
+  />
 
   <h2>Result</h2>
   <p>
@@ -55,8 +81,10 @@ let email = users
     <code>Error(reason)</code>. The <code>?</code> operator returns early on an
     <code>Error</code>, unwrapping an <code>Ok</code>.
   </p>
-  <Code code={`let parsePort(s: String) -> Result<Int, ParseError> do
+  <Code
+    code={`let parsePort(s: String) -> Result<Int, ParseError> do
   return Error(EmptyInput) if s.empty?
+  
   match Integer.parse(s) do
     Ok(n)    -> do
       return Error(Overflow) if n > 65535
@@ -64,5 +92,26 @@ let email = users
     end
     Error(_) -> Error(InvalidFormat(s))
   end
-end`} file="result.kex" />
+end`}
+    file="result.kex"
+  />
+  <p>
+    <code>Result&lt;T, E&gt;</code> can also be simplified as <code
+      >T or! E</code
+    >.
+  </p>
+  <Code
+    code={`let parsePort(s: String) -> Int or! ParseError do
+  return Error(EmptyInput) if s.empty?
+  
+  match Integer.parse(s) do
+    Ok(n)    -> do
+      return Error(Overflow) if n > 65535
+      return Ok(n)
+    end
+    Error(_) -> Error(InvalidFormat(s))
+  end
+end`}
+    file="result.kex"
+  />
 </DocsLayout>

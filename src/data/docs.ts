@@ -30,7 +30,7 @@ export const DOCS_NAV: DocSection[] = [
   {
     heading: "Reference",
     entries: [
-      { title: "Standard library", slug: "stdlib", blurb: "Lists, maps, streams, IO, Math." },
+      { title: "Prelude", slug: "prelude", blurb: "Lists, maps, streams, IO, Math." },
       { title: "Operators", slug: "operators", blurb: "Operator table & overloading." },
     ],
   },
