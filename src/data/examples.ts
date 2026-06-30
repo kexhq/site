@@ -18,7 +18,7 @@ export const EXAMPLES: Example[] = [
   {
     slug: "hello",
     title: "Hello, world",
-    tagline: "The shape of a Kex program — `main` is the entry point.",
+    tagline: "Your first Kex program, prints 'Hello, world!' to the console.",
     category: "Basics",
     source: "examples/hello.kex",
     code: `main do
@@ -156,36 +156,10 @@ end
 
   },
   {
-    slug: "streams",
-    title: "Lazy, infinite streams",
-    tagline:
-      "Build the naturals, filter into primes, and take only what you need — nothing runs until you consume it.",
-    category: "Control",
-    source: "examples/streams.kex",
-    code: `let naturals = Stream.Sequence(from: 0) { | n | n + 1 }
-
-let primes = Stream.Sequence(from: 2) { | n | n + 1 }
-  .filter do | n |
-  (2..n - 1).all ? { | d | n.modulo(d) != 0 }
-end
-
-main do
-  primes.take(8).each { | p | IO.printLine(p.to(String)) }
-end`,
-    output: `2
-3
-5
-7
-11
-13
-17
-19`,
-  },
-  {
     slug: "currying",
     title: "Currying & partial application",
     tagline:
-      "`~func(args)` builds a partial. `_` marks an open slot. Saturate all slots and it just runs.",
+      "Use the tilde `~` for currying a function. `_` marks an open slot (only required if it's not the next one).",
     category: "Basics",
     source: "README.md",
     code: `let add(a, b) = a + b
@@ -195,13 +169,15 @@ let inc = ~add(1)
 let double = ~multiply(2)
 
 main do
-  IO.printLine([1, 2, 3].map(~multiply(10)).to(String))
-  IO.printLine((1..100).reduce(0, ~(+)).to(String))
-IO.printLine(inc(41).to(String))
+  let multipled = [1, 2, 3].map(~multiply(10))
+  IO.printLine(multipled)
+
+  let summed = (1..100).reduce(0, ~(+))
+  IO.printLine(summed)
 end`,
     output: `[10, 20, 30]
 5050
-42`,
+`,
   },
   {
     slug: "traits",
@@ -242,11 +218,11 @@ end`,
     code: `main do
   var list = [1, 2, 3, 4, 5]
 
-  list.push!(6)
-  list.filter!(&.even ?)
-list.map! { | x | x * 10 }
+  list.push!(6)             # list = [1, 2, 3, 4, 5, 6]
+  list.filter!(&.even?)     # list = [2, 4, 6]
+  list.map! { |x| x * 10 }  # list = [20, 40, 60]
 
-IO.printLine(list.to(String))
+  IO.printLine(list.to(String))
 end`,
     output: "[20, 40, 60]",
   },
