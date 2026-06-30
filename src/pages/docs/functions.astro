@@ -1,0 +1,82 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Functions" current="functions" description="Functions, lambdas, UFCS, and currying in kex.">
+  <h1>Functions</h1>
+
+  <p>
+    Functions are the backbone of kex. They can be single expressions or
+    <code>do … end</code> blocks, and they compose through Uniform Function
+    Call Syntax.
+  </p>
+
+  <h2>Signatures</h2>
+  <Code code={`let double(n: Int) = n * 2
+
+let factorial(n: Int) -> Int do
+  return 1 if n == 0
+  return n * factorial(n - 1)
+end
+
+# multiple clauses pattern-match arguments
+let factorial(0) = 1
+let factorial(n: Int) = n * factorial(n - 1)`} file="fns.kex" />
+
+  <h2>Uniform Function Call Syntax</h2>
+  <p>
+    <code>value.f(arg)</code> is equivalent to <code>f(value, arg)</code>. The
+    receiver type decides which overload resolves. This is what makes fluent
+    pipelines possible without methods living on the data.
+  </p>
+  <Code code={`requests
+  .filter { |req| req.path.startsWith?("/admin") }
+  .reject(&.authenticated?)
+  .map { |req| SecurityEvent.from(req) }
+  .take(20)
+
+# exactly equivalent:
+map(requests, &normalize)`} file="ufcs.kex" />
+
+  <h2>Lambdas and block arguments</h2>
+  <Code code={`let inc = { |x| x + 1 }
+let add = { |a, b| a + b }
+
+[1, 2, 3].map(&inc)         # [2, 3, 4]
+[1, 2, 3].map(&.to(String)) # method reference via &.`} file="lambdas.kex" />
+
+  <h2>Currying and partial application</h2>
+  <p>
+    <code>~func(args)</code> builds a partial application. Bound arguments fill
+    left to right; <code>_</code> marks an explicit open slot. Once enough
+    arguments arrive to fully saturate, the function runs immediately.
+  </p>
+  <Code code={`let add(a, b) = a + b
+let multiply(a, b) = a * b
+
+let inc    = ~add(1)              # {|b| add(1, b)}
+let double = ~multiply(2)         # {|b| multiply(2, b)}
+
+[1, 2, 3].map(~multiply(10))      # [10, 20, 30]
+(1..100).reduce(0, ~(+))          # 5050
+
+let sub5 = ~(-)(_, 5)             # {|a| a - 5}
+sub5(20)                          # 15`} file="curry.kex" />
+
+  <h2>Type-directed <code>make</code></h2>
+  <p>
+    Behavior attaches to a type through <code>make</code>. Inside,
+    <code>@field</code> is shorthand for <code>this.field</code>, and operators
+    overload per receiver type.
+  </p>
+  <Code code={`make Vector2D do
+  let +(other: Vector2D) -> Vector2D do
+    return Vector2D { x: @x + other.x, y: @y + other.y }
+  end
+
+  let to(String) -> String do
+    return "(\${@x}, \${@y})"
+  end
+end`} file="make.kex" />
+</DocsLayout>

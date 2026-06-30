@@ -1,0 +1,78 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Syntax" current="syntax" description="The lexical and structural syntax of a kex program.">
+  <h1>Syntax</h1>
+
+  <p>
+    Kex borrows Ruby’s <code>do … end</code> blocks and identifier conventions,
+    layers on type annotations with <code>:</code>, and uses <code>-&gt;</code>
+    for return types and <code>=</code> for expression-bodied functions.
+  </p>
+
+  <h2>Comments</h2>
+  <Code code={`# this is a line comment`} bare compact />
+
+  <h2>Bindings</h2>
+  <p>
+    <code>let</code> binds an immutable name. <code>var</code> opts into local
+    mutation. The <code>!</code> suffix rebinds a <code>var</code> to a
+    method’s updated return value.
+  </p>
+  <Code code={`let name = "kex"          # immutable
+var count = 0             # mutable
+count = count + 1         # reassign
+
+var list = [1, 2, 3]
+list.push!(4)             # list := list.push(4)`} file="bindings.kex" />
+
+  <h2>Functions</h2>
+  <p>
+    A function is either a single expression after <code>=</code>, or a
+    <code>do … end</code> block ending in <code>return</code>.
+  </p>
+  <Code code={`let double(n: Int) = n * 2
+
+let greet(name: String) -> String do
+  return "Hello, \${name}!"
+end
+
+let add(a, b) = a + b   # types can be inferred`} file="functions.kex" />
+
+  <h2>Blocks and lambdas</h2>
+  <Code code={`[1, 2, 3].map { |x| x * 2 }
+
+[1, 2, 3].each do |x|
+  IO.printLine(x.to(String))
+end`} file="blocks.kex" />
+
+  <h2>Records and construction</h2>
+  <Code code={`record Point do
+  x : Float
+  y : Float
+end
+
+let p = Point { x: 1.0, y: 2.0 }`} file="point.kex" />
+
+  <h2>Control flow</h2>
+  <p>
+    Branching is <code>if / elif / else</code>, optionally with a trailing
+    <code>if</code> guard. Rich dispatch lives in <a href="/docs/pattern-matching"><code>match</code></a>.
+  </p>
+  <Code code={`return Error(EmptyInput) if s.empty?
+
+if n > 0 then
+  "positive"
+elif n < 0 then
+  "negative"
+else
+  "zero"
+end`} file="control.kex" />
+
+  <h2>String interpolation</h2>
+  <Code code={`let name = "world"
+"Hello, \${name}!"
+"\${(1..3).sum}"   # "6"`} file="interp.kex" />
+</DocsLayout>

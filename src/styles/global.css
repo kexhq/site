@@ -1,0 +1,290 @@
+@import "tailwindcss";
+
+/* ----------------------------------------------------------------------------
+   kex.so design tokens
+   Palette derived directly from the kex logo, which runs from dark brown
+   through bronze and amber-gold into honey and cream. The page sits on the
+   bright (honey/cream) end of that gradient; ink comes from the dark end;
+   the accent is the amber-gold mid. Warm, friendly, editorial — closer to
+   the Ruby language site than a cool SaaS landing page.
+---------------------------------------------------------------------------- */
+
+@theme {
+  /* surfaces — logo's bright honey/cream end */
+  --color-bg: #fcf5e2;        /* warm paper (pale honey) */
+  --color-bg-subtle: #f6ecd0; /* deeper honey for alt sections */
+  --color-bg-muted: #f0e2bc;
+  --color-bg-sunken: #ead9a8;
+
+  /* ink — logo's dark brown end */
+  --color-ink: #2a1c0a;       /* near-black warm brown */
+  --color-ink-soft: #54380f;  /* dark brown (~ #653408) */
+  --color-muted: #7a5a25;     /* muted bronze text */
+  --color-faint: #9c7a3c;
+
+  /* lines — warm */
+  --color-line: #ecdcb4;
+  --color-line-strong: #dbc78c;
+
+  /* brand accent — logo's amber-gold mid */
+  --color-accent: #b06a14;
+  --color-accent-strong: #8a4f0a;
+  --color-accent-soft: #f4e2b8;
+  --color-accent-ink: #5a3408;
+  --color-accent-display: #c98a1e; /* honey-gold for big extralight titles */
+
+  /* code surface (kept dark — crisp contrast on cream) */
+  --color-code-bg: #1b140a;       /* warm-tinted near-black */
+  --color-code-bg-soft: #221a0e;
+  --color-code-border: #382a16;
+
+  /* fonts */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, Cambria,
+    "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Fira Code",
+    "Cascadia Code", Menlo, Consolas, monospace;
+
+  /* layout */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
+
+/* ----------------------------------------------------------------------------
+   Base
+---------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    /* faint honey glow at the very top, like the logo's bright edge */
+    background-image: radial-gradient(
+      ellipse 90% 50% at 50% -10%,
+      rgba(236, 178, 94, 0.28),
+      transparent 70%
+    );
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* headings use the strong serif display face */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Utilities
+---------------------------------------------------------------------------- */
+
+@layer utilities {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  .container-prose {
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      92deg,
+      var(--color-ink) 0%,
+      var(--color-accent-strong) 130%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* honey wash used on alt sections */
+  .bg-honey {
+    background-color: var(--color-bg-subtle);
+    background-image:
+      radial-gradient(
+        ellipse 60% 60% at 0% 0%,
+        rgba(236, 178, 94, 0.18),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 60% at 100% 100%,
+        rgba(210, 140, 54, 0.14),
+        transparent 60%
+      );
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      #000 40%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      #000 40%,
+      transparent 100%
+    );
+  }
+
+  .ring-hairline {
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Prose (docs)
+---------------------------------------------------------------------------- */
+
+@layer components {
+  .prose-doc {
+    color: var(--color-ink-soft);
+    font-size: 1.0125rem;
+    line-height: 1.75;
+  }
+  .prose-doc h1 {
+    color: var(--color-ink);
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    line-height: 1.15;
+  }
+  .prose-doc h2 {
+    color: var(--color-ink);
+    font-size: 1.4rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 2.6rem 0 0.9rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .prose-doc h3 {
+    color: var(--color-ink);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin: 1.8rem 0 0.6rem;
+  }
+  .prose-doc p {
+    margin: 0 0 1.1rem;
+  }
+  .prose-doc a {
+    color: var(--color-accent-strong);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent-soft);
+    text-underline-offset: 3px;
+  }
+  .prose-doc a:hover {
+    text-decoration-color: currentColor;
+  }
+  .prose-doc ul,
+  .prose-doc ol {
+    margin: 0 0 1.1rem;
+    padding-left: 1.3rem;
+  }
+  .prose-doc ul {
+    list-style: disc;
+  }
+  .prose-doc ol {
+    list-style: decimal;
+  }
+  .prose-doc li {
+    margin: 0.3rem 0;
+  }
+  .prose-doc code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: var(--color-bg-muted);
+    border: 1px solid var(--color-line);
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    color: var(--color-ink);
+  }
+  .prose-doc strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .prose-doc blockquote {
+    border-left: 3px solid var(--color-accent);
+    background: var(--color-bg-subtle);
+    padding: 0.7rem 1rem;
+    margin: 1.4rem 0;
+    border-radius: 0 8px 8px 0;
+    color: var(--color-ink-soft);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Code surface (shared by Code component + REPL stub)
+   Dark, warm-tinted; crisp contrast against the cream page.
+---------------------------------------------------------------------------- */
+
+.surface-code {
+  background-color: var(--color-code-bg);
+  color: #e9e0cf;
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+/* syntax token colors on dark code surface */
+.tok-comment { color: #94876a; font-style: italic; }
+.tok-keyword { color: #f0c987; }
+.tok-type    { color: #e6a960; }
+.tok-string  { color: #c9e0a0; }
+.tok-interp  { color: #e9e0cf; }
+.tok-number  { color: #ffc18a; }
+.tok-fn      { color: #ffe0a0; }
+.tok-method  { color: #ffe0a0; }
+.tok-op      { color: #d8b878; }
+.tok-punct   { color: #a89a78; }
+.tok-const   { color: #e6a960; }
+.tok-field   { color: #f0e8d4; }
+.tok-bool    { color: #ffc18a; }
+
+/* slim scrollbar for code blocks */
+.scroll-slim::-webkit-scrollbar { height: 8px; width: 8px; }
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: rgba(255, 224, 160, 0.16);
+  border-radius: 8px;
+}
+.scroll-slim::-webkit-scrollbar-track { background: transparent; }

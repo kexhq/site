@@ -1,0 +1,64 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Pattern matching" current="pattern-matching" description="match expressions, destructuring, and guards in kex.">
+  <h1>Pattern matching</h1>
+
+  <p>
+    Pattern matching is the primary form of branching in kex. It works in
+    function clauses, <code>match</code> expressions, and destructuring
+    bindings.
+  </p>
+
+  <h2><code>match</code> expressions</h2>
+  <Code code={`let fizzBuzz(n: Int) -> String do
+  match (n.modulo(3), n.modulo(5)) do
+    (0, 0) -> "FizzBuzz"
+    (0, _) -> "Fizz"
+    (_, 0) -> "Buzz"
+    (_, _) -> "\${n}"
+  end
+end`} file="fizzbuzz.kex" />
+
+  <h2>Multi-clause functions</h2>
+  <p>
+    Define the same function several times against different patterns. Clauses
+    are tried top to bottom.
+  </p>
+  <Code code={`let factorial(0) = 1
+let factorial(n: Int) = n * factorial(n - 1)
+
+let head([h, *_]) = h
+let head([])      = None`} file="clauses.kex" />
+
+  <h2>Destructuring</h2>
+  <Code code={`let (q, r) = divmod(10, 3)
+
+match result do
+  Ok(n)    -> "got \${n}"
+  Error(e) -> "failed: \${e}"
+end
+
+match opt do
+  Just(user) -> user.email
+  None       -> "no email"
+end`} file="destructuring.kex" />
+
+  <h2><code>if let</code></h2>
+  <Code code={`if let Just(largest) = shapes.max { |s| s.area }
+  IO.printLine("largest area: \${largest}")
+end`} file="iflet.kex" />
+
+  <h2>Guards</h2>
+  <p>
+    A trailing <code>if</code> narrows a clause. The clause only fires if the
+    guard holds.
+  </p>
+  <Code code={`match n do
+  x if x < 0     -> "negative"
+  0              -> "zero"
+  _              -> "positive"
+end`} file="guards.kex" />
+</DocsLayout>

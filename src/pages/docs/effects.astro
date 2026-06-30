@@ -1,0 +1,56 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Effects & purity" current="effects" description="Purity, foul, and the ? operator in kex.">
+  <h1>Effects & purity</h1>
+
+  <p>
+    Functions are pure by default. To perform side effects — read a file, print,
+    spawn a process — you mark a function <code>foul</code>. <strong>Pure code
+    cannot call foul code</strong>, enforced at type-check time. The shape of
+    the program tells you where IO happens.
+  </p>
+
+  <h2>Pure vs foul</h2>
+  <Code code={`let compute(x: Int) = x * 2 + 1     # pure
+
+foul readConfig(path: String) do
+  return File.read(path)
+end
+
+# Compile error: pure code cannot call foul code.
+# let bad(path: String) = readConfig(path)`} file="purity.kex" />
+
+  <p><code>main</code> is implicitly foul, so programs still have a natural place for IO.</p>
+
+  <h2>Propagating failures with <code>?</code></h2>
+  <p>
+    <code>?</code> after a <code>Result</code> (or <code>Optional</code>)
+    expression returns early on an <code>Error</code> / <code>None</code> and
+    unwraps the success value otherwise. This keeps happy-path code flat.
+  </p>
+  <Code code={`foul loadConfig(path: String) -> Result<Config, AppError> do
+  let content = IO.readFile(path)?
+  let parsed  = Config.parse(content)?
+  let port    = parsePort(parsed.get("port"))?
+  return Ok(Config { port: port, host: parsed.get("host") })
+end`} file="propagate.kex" />
+
+  <h2>Local mutation</h2>
+  <p>
+    Bindings are immutable by default. <code>var</code> opts into local
+    mutation, and <code>!</code> rebinds the variable to the method’s updated
+    return value — the underlying value is never mutated in place, so aliases
+    never see the change.
+  </p>
+  <Code code={`var list = [1, 2, 3, 4, 5]
+list.push!(6)
+list.filter!(&.even?)
+list.map! { |x| x * 10 }
+# list is [20, 40, 60]
+
+# frozen.push!(4)
+# runtime error: Cannot use '!' on immutable binding: frozen`} file="mutation.kex" />
+</DocsLayout>

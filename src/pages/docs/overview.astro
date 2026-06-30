@@ -1,0 +1,51 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Overview" current="overview" description="What kex is, how it's built, and what it's for.">
+  <h1>Overview</h1>
+
+  <p>
+    Kex is a small <strong>functional programming language</strong> with
+    Ruby-like syntax, immutable data by default, Uniform Function Call Syntax,
+    type-directed <code>make</code> blocks, pattern matching, and explicit
+    side-effect boundaries.
+  </p>
+
+  <p>
+    It’s designed for code that reads like a scripting language without giving
+    up typed records, sum types, pure functions, and predictable dispatch.
+  </p>
+
+  <h2>The shape of a program</h2>
+  <p>
+    Every kex program starts from <code>main</code>. <code>main</code> is the
+    one place side effects are allowed to live, so it’s implicitly
+    <code>foul</code>.
+  </p>
+
+  <Code code={`main do
+  IO.printLine("Hello, world!")
+end`} output="Hello, world!" file="hello.kex" />
+
+  <h2>Design principles</h2>
+  <ul>
+    <li><strong>Pipelines over methods.</strong> <code>value.f(arg)</code> is exactly <code>f(value, arg)</code>. Plain functions compose into fluent chains.</li>
+    <li><strong>Behavior near its type.</strong> <code>make</code> attaches functions, operators, and methods to a type — without classes or inheritance.</li>
+    <li><strong>Effects you can see.</strong> Pure by default; <code>foul</code> marks effectful code, and pure code can’t call it.</li>
+    <li><strong>Failure as a value.</strong> <code>Result</code> and <code>Optional</code> carry errors; <code>?</code> propagates them.</li>
+  </ul>
+
+  <h2>Status</h2>
+  <p>
+    The current implementation is a <strong>tree-walk interpreter</strong>
+    written in C++20, with a type checker active by default. Work is underway on
+    a bytecode VM and WASM codegen for a browser REPL.
+  </p>
+
+  <blockquote>
+    Looking for install steps? See the <a href="/install">install guide</a>,
+    or jump into <a href="/docs/syntax">syntax</a>.
+  </blockquote>
+</DocsLayout>

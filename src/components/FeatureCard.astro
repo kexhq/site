@@ -1,0 +1,54 @@
+---
+import { FEATURES, type Feature } from "~/data/features";
+
+const ICONS: Record<Feature["icon"], string> = {
+  pipe: '<path d="M4 7h7v4h6V7h3M4 17h3v-4h6v4h7"/>',
+  blocks:
+    '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  branches:
+    '<circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2M6 12c0-3 3-3 6-3h3.6"/>',
+  shield:
+    '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/>',
+  types:
+    '<path d="M9 4v16M9 4l-4 3M9 4l4 3"/><rect x="13" y="12" width="7" height="8" rx="1.5"/><path d="M13 16h7"/>',
+  lock:
+    '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4"/>',
+  stream:
+    '<path d="M3 6h7l3 12h5M3 12h7M3 18h4"/><circle cx="18" cy="18" r="2"/>',
+  trait:
+    '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 8v8M8 10l8 4M16 10l-8 4"/>',
+  braces: '<path d="M7 4c-2 0-3 1-3 3v3c0 1.5-1 2-2 2 1 0 2 .5 2 2v3c0 2 1 3 3 3M17 4c2 0 3 1 3 3v3c0 1.5 1 2 2 2-1 0-2 .5-2 2v3c0 2-1 3-3 3"/>',
+};
+
+interface Props {
+  feature?: Feature;
+}
+const { feature } = Astro.props;
+---
+
+<div
+  class="group relative rounded-2xl border border-[var(--color-line)] bg-[var(--color-bg)] p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-line-strong)] hover:shadow-[0_18px_40px_-26px_rgba(13,12,40,0.35)]"
+>
+  <div
+    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)] transition-colors group-hover:bg-[var(--color-accent)] group-hover:text-white"
+  >
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      set:html={ICONS[feature?.icon ?? "blocks"]}
+    />
+  </div>
+  <h3 class="text-[15.5px] font-semibold tracking-[-0.01em] text-[var(--color-ink)]">
+    {feature?.title}
+  </h3>
+  <p class="mt-1.5 text-[14px] leading-relaxed text-[var(--color-muted)]">
+    {feature?.blurb}
+  </p>
+</div>

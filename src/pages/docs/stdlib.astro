@@ -1,0 +1,60 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Standard library" current="stdlib" description="Lists, maps, ranges, streams, strings, IO, and Math in kex.">
+  <h1>Standard library</h1>
+
+  <p>
+    Kex ships a small, focused standard library covering collections, strings,
+    IO, math, and effectful primitives. Collections share enumeration
+    operations through <code>Enumerable</code>.
+  </p>
+
+  <h2>Lists &amp; ranges</h2>
+  <Code code={`let nums = [1, 2, 3, 4, 5]
+
+nums.sum                        # 15
+nums.map { |x| x * 2 }          # [2, 4, 6, 8, 10]
+nums.filter(&.even?)            # [2, 4]
+nums.find(&.even?)              # Just(2)
+nums.contains?(3)               # true
+nums.min                        # Just(1)
+
+let r = 1..100
+r.sum                           # 5050
+r.map { |x| x * x }.take(3)     # [1, 4, 9]`} file="collections.kex" />
+
+  <h2>Maps</h2>
+  <Code code={`var ages = { "alice": 30, "bob": 25 }
+ages.put!("charlie", 35)
+ages.delete!("bob")
+ages.get("alice")               # Just(30)
+ages.keys                       # ["alice", "charlie"]`} file="maps.kex" />
+
+  <h2>Strings &amp; chars</h2>
+  <Code code={`"hello".upperCase            # "HELLO"
+"  hi  ".trim                # "hi"
+"a,b,c".split(",")          # ["a", "b", "c"]
+"a-b-c".contains?("-")       # true
+
+'0'.digit?                   # true
+'a'.alpha?                   # true
+' '.space?                   # true`} file="strings.kex" />
+
+  <h2>Lazy streams</h2>
+  <Code code={`let naturals = Stream.Sequence(from: 0) { |n| n + 1 }
+let primes = Stream.Sequence(from: 2) { |n| n + 1 }
+  .filter do |n|
+    (2..n - 1).all? { |d| n.modulo(d) != 0 }
+  end
+
+primes.take(5)                 # [2, 3, 5, 7, 11]`} file="streams.kex" />
+
+  <h2>IO &amp; Math</h2>
+  <Code code={`IO.printLine("hi")            # stdout
+Math.PI                       # 3.141592653589793
+Math.sqrt(16.0)               # 4.0
+Math.sin(0.0)                 # 0.0`} file="io-math.kex" />
+</DocsLayout>

@@ -1,0 +1,94 @@
+---
+import { highlightKex } from "~/lib/highlight";
+
+interface Props {
+  code: string;
+  title?: string;
+  /** Show a faux window filename pill instead of a raw label. */
+  file?: string;
+  /** Optional small caption rendered under the code. */
+  caption?: string;
+  /** Remove left padding indent for inline-ish blocks. */
+  compact?: boolean;
+  /** Hide the top toolbar entirely. */
+  bare?: boolean;
+  /** Render an output pane below the code (Kex program stdout). */
+  output?: string;
+}
+
+const { code, title, file, caption, compact, bare, output } = Astro.props;
+
+const highlighted = highlightKex(code.replace(/\n$/, ""));
+const hasOutput = typeof output === "string" && output.trim().length > 0;
+const label = file ?? title;
+---
+
+<figure
+  class:list={[
+    "group surface-code relative my-5 overflow-hidden rounded-xl border border-[var(--color-code-border)] shadow-[0_18px_40px_-24px_rgba(13,12,40,0.45)]",
+  ]}
+>
+  {!bare && (
+    <div
+      class="flex items-center gap-3 border-b border-[var(--color-code-border)] bg-[var(--color-code-bg-soft)] px-4 py-2.5"
+    >
+      <span class="flex gap-1.5" aria-hidden="true">
+        <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-[#febc2e]"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-[#28c840]"></span>
+      </span>
+      {label && (
+        <span class="font-mono text-[12px] text-[#8a8aa0]">{label}</span>
+      )}
+      <button
+        type="button"
+        data-copy
+        data-copy-target="next-code-block"
+        class="ml-auto hidden items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] text-[#9a9ab0] transition hover:bg-white/5 hover:text-[#e6e6f0] sm:inline-flex"
+        aria-label="Copy code"
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span data-copy-label>Copy</span>
+      </button>
+    </div>
+  )}
+
+  <div class="relative">
+    <pre class:list={["scroll-slim overflow-x-auto px-4 py-4 text-[14px] leading-[1.7]", !compact && "sm:px-5"]}><code set:html={highlighted}></code></pre>
+  </div>
+
+  {hasOutput && (
+    <div class="border-t border-[var(--color-code-border)] bg-[var(--color-code-bg-soft)]">
+      <div class="px-4 pt-2.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]">
+        stdout
+      </div>
+      <pre class="scroll-slim overflow-x-auto px-4 pb-3 pt-1 font-mono text-[13px] leading-[1.6] text-[#9ad6a0]"><code>{output.replace(/\n$/, "")}</code></pre>
+    </div>
+  )}
+</figure>
+
+{caption && (
+  <figcaption class="-mt-2 mb-5 text-center text-[13px] text-[var(--color-faint)]">
+    {caption}
+  </figcaption>
+)}
+
+<script is:inline>
+  // Tiny, dependency-free copy-to-clipboard wiring.
+  document.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement)?.closest?.("[data-copy]");
+    if (!btn) return;
+    const figure = btn.closest("figure");
+    const pre = figure?.querySelector("pre code");
+    if (!pre) return;
+    const text = pre.innerText;
+    navigator.clipboard?.writeText(text).then(() => {
+      const label = btn.querySelector("[data-copy-label]");
+      const prev = label?.textContent;
+      if (label) label.textContent = "Copied";
+      setTimeout(() => {
+        if (label && prev) label.textContent = prev;
+      }, 1400);
+    });
+  });
+</script>

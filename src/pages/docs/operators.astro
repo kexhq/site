@@ -1,0 +1,76 @@
+---
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import Code from "~/components/Code.astro";
+---
+
+<DocsLayout title="Operators" current="operators" description="The operator table, precedence, and how to overload per type.">
+  <h1>Operators</h1>
+
+  <p>
+    Operators in kex are just methods with symbolic names, attached to a type
+    through <code>make</code>. The same symbol can resolve to different
+    implementations depending on the receiver.
+  </p>
+
+  <h2>Operator table</h2>
+
+  <div class="my-6 overflow-hidden rounded-xl border border-[var(--color-line)]">
+    <table class="w-full border-collapse text-[14px]">
+      <thead class="bg-[var(--color-bg-subtle)] text-left">
+        <tr>
+          <th class="border-b border-[var(--color-line)] px-4 py-2.5 font-mono text-[12px] uppercase tracking-[0.1em] text-[var(--color-faint)]">Operator</th>
+          <th class="border-b border-[var(--color-line)] px-4 py-2.5 font-mono text-[12px] uppercase tracking-[0.1em] text-[var(--color-faint)]">Purpose</th>
+        </tr>
+      </thead>
+      <tbody class="font-mono text-[13.5px]">
+        {
+          [
+            ["+", "addition / concatenation"],
+            ["-", "subtraction"],
+            ["*", "multiplication"],
+            ["/", "division"],
+            ["%", "modulo"],
+            ["== !=", "equality"],
+            ["< > <= >=", "comparison"],
+            ["&& ||", "boolean logic"],
+            ["&", "function / method reference"],
+            ["~", "partial application"],
+            ["?", "early-return propagation"],
+            ["..", "range (1..10)"],
+            ["@", "@field shorthand in make"],
+          ].map(([op, desc]) => (
+            <tr class="border-t border-[var(--color-line)]">
+              <td class="px-4 py-2.5 align-top text-[var(--color-accent-strong)]">{op}</td>
+              <td class="px-4 py-2.5 align-top font-sans text-[var(--color-ink-soft)]">{desc}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Overloading</h2>
+  <p>
+    Define the operator as a method inside <code>make</code>. Dispatch is by
+    receiver type, so <code>Vector2D.+</code> and <code>Vector3D.+</code> can
+    coexist.
+  </p>
+  <Code code={`make Vector2D do
+  let +(other: Vector2D) -> Vector2D do
+    return Vector2D { x: @x + other.x, y: @y + other.y }
+  end
+
+  let *(factor: Float) -> Vector2D do
+    return Vector2D { x: @x * factor, y: @y * factor }
+  end
+end
+
+# Operator sugar resolves through the receiver type:
+# Vector2D.UnitX * 2.0 + Vector2D { x: 0.0, y: 5.0 }`} file="overload.kex" />
+
+  <h2>Conversion convention</h2>
+  <p>
+    A method named <code>to</code> taking a type is the canonical conversion.
+    <code>value.to(String)</code> is how values render.
+  </p>
+</DocsLayout>
