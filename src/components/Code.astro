@@ -76,7 +76,7 @@ const label = file ?? title;
 <script is:inline>
   // Tiny, dependency-free copy-to-clipboard wiring.
   document.addEventListener("click", (e) => {
-    const btn = (e.target as HTMLElement)?.closest?.("[data-copy]");
+    const btn = e.target?.closest?.("[data-copy]");
     if (!btn) return;
     const figure = btn.closest("figure");
     const pre = figure?.querySelector("pre code");
