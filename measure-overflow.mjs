@@ -14,7 +14,7 @@ const ROUTES = [
   "/docs/pattern-matching",
   "/docs/effects",
   "/docs/traits",
-  "/docs/stdlib",
+  "/docs/prelude",
   "/docs/operators",
   "/tutorial",
   "/install",
