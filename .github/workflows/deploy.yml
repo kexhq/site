@@ -1,4 +1,4 @@
-# Build and deploy the kex.so site to GitHub Pages
+# Build and deploy the kex.run site to GitHub Pages
 name: Deploy site
 
 on:

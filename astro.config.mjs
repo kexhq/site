@@ -3,11 +3,11 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
-// Hosted at the apex domain kex.so via GitHub Pages (custom domain → no base path).
+// Hosted at the apex domain kex.run via GitHub Pages (custom domain → no base path).
 // If you ever move to a project-page URL (e.g. user.github.io/kex), set `site`
 // accordingly and add `base: "/kex"` to both the site config and the CNAME removal.
 export default defineConfig({
-  site: "https://kex.so",
+  site: "https://kex.run",
   trailingSlash: "ignore",
   integrations: [sitemap()],
   vite: {
