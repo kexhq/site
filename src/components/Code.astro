@@ -1,11 +1,14 @@
 ---
 import { highlightKex } from "~/lib/highlight";
+import { repoBlob } from "~/data/site";
 
 interface Props {
   code: string;
   title?: string;
   /** Show a faux window filename pill instead of a raw label. */
   file?: string;
+  /** Repo-relative path (e.g. "examples/hello.kex"). When given, renders a "View on GitHub" link below the code. */
+  source?: string;
   /** Optional small caption rendered under the code. */
   caption?: string;
   /** Remove left padding indent for inline-ish blocks. */
@@ -16,7 +19,7 @@ interface Props {
   output?: string;
 }
 
-const { code, title, file, caption, compact, bare, output } = Astro.props;
+const { code, title, file, source, caption, compact, bare, output } = Astro.props;
 
 const highlighted = highlightKex(code.replace(/\n$/, ""));
 const hasOutput = typeof output === "string" && output.trim().length > 0;
@@ -66,6 +69,18 @@ const label = file ?? title;
     </div>
   )}
 </figure>
+
+{source && (
+  <a
+    href={repoBlob(source)}
+    target="_blank"
+    rel="noreferrer"
+    class="-mt-3 mb-5 ml-5 inline-flex items-center gap-1.5 font-mono text-[12.5px] text-[var(--color-accent-strong)] hover:underline"
+  >
+    {source}
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+  </a>
+)}
 
 {caption && (
   <figcaption class="-mt-2 mb-5 text-center text-[13px] text-[var(--color-faint)]">

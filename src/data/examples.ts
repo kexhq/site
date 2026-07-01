@@ -60,7 +60,7 @@ end
 main do
   let list = [1, 2, 3]
   IO.printLine(list.head)   # same as: head(list)
-  IO.printLine(head([]))    # same as: [].head
+  IO.printLine([].head)     # same as: head([])
 
   IO.printLine(list.rest)
 end
@@ -100,8 +100,8 @@ main do
   let position = Vector2D { x: 3.0, y: 4.0 }
   let velocity = Vector2D { x: 1.0, y: -0.5 }
 
-  let next = position + velocity * 2.0
-  IO.printLine("next position: \${next.to(String)}")
+  let combined = position + velocity * 2.0
+  IO.printLine("next position: \${combined.to(String)}")
 end`,
     output: "next position: (5.0, 3.0)",
   },

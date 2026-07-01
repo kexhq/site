@@ -32,6 +32,7 @@ let boiling = Temperature { celsius: 100.0 }
 let freezing = Temperature.Freezing
 `}
     file="record.kex"
+    source="examples/record.kex"
   />
 
   <h2>Sum types</h2>
@@ -46,33 +47,30 @@ let describe(e: ParseError) -> String do
   end
 end`}
     file="union.kex"
+    source="examples/union.kex"
   />
 
   <h2>Optional</h2>
   <p>
     <code>T?</code> is sugar for an optional value. Constructors are
-    <code>Just(value)</code> and <code>None</code>. <code>flatMap</code> chains optional
-    computations.
+    <code>Just(value)</code> and <code>None</code>. <code>.or(default)</code> unwraps
+    with a fallback.
   </p>
   <Code
-    code={`# Using bare Optional<T>
-let findUserTodo(todos, user, todo) -> Optional<Todo>
-  let todo = todos.find { |t| t.id == todo.id }
-  return None if todo.userId != user.id
-
-  return Just(todo)
+    code={`let findUserTodo(todos: [Todo], userId: Integer, todoId: Integer) -> Todo? do
+  return todos.find { |t| t.id == todoId && t.userId == userId }
 end
 
 # Using T? sugar
-let findUser(users, name) -> User? do
+let findUser(users: [User], name: String) -> User? do
   return users.find { |u| u.name == name }
 end
 
-
-let email = users
-  .find(&.adult?)
-  .flatMap(&.email)        # String?`}
+let fallback = User { id: 0, name: "nobody", adult?: false, email: None }
+let adult = users.find { |u| u.adult? }.or(fallback)
+"adult email: \${adult.email}"        # String?`}
     file="optional.kex"
+    source="examples/optional.kex"
   />
 
   <h2>Result</h2>
@@ -94,6 +92,7 @@ let email = users
   end
 end`}
     file="result.kex"
+    source="examples/result.kex"
   />
   <p>
     <code>Result&lt;T, E&gt;</code> can also be simplified as <code
@@ -113,5 +112,6 @@ end`}
   end
 end`}
     file="result.kex"
+    source="examples/result.kex"
   />
 </DocsLayout>

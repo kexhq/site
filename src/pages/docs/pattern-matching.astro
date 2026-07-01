@@ -20,7 +20,7 @@ import Code from "~/components/Code.astro";
     (_, 0) -> "Buzz"
     (_, _) -> "\${n}"
   end
-end`} file="fizzbuzz.kex" />
+end`} file="fizzbuzz.kex" source="examples/fizzbuzz.kex" />
 
   <h2>Multi-clause functions</h2>
   <p>
@@ -28,10 +28,10 @@ end`} file="fizzbuzz.kex" />
     are tried top to bottom.
   </p>
   <Code code={`let factorial(0) = 1
-let factorial(n: Int) = n * factorial(n - 1)
+let factorial(n: Integer) = n * factorial(n - 1)
 
-let head([h, *_]) = h
-let head([])      = None`} file="clauses.kex" />
+let head([h | _]) = h
+let head([])      = None`} file="clauses.kex" source="examples/clauses.kex" />
 
   <h2>Destructuring</h2>
   <Code code={`let (q, r) = divmod(10, 3)
@@ -44,21 +44,21 @@ end
 match opt do
   Just(user) -> user.email
   None       -> "no email"
-end`} file="destructuring.kex" />
+end`} file="destructuring.kex" source="examples/destructuring.kex" />
 
   <h2><code>if let</code></h2>
   <Code code={`if let Just(largest) = shapes.max { |s| s.area }
   IO.printLine("largest area: \${largest}")
-end`} file="iflet.kex" />
+end`} file="iflet.kex" source="examples/iflet.kex" />
 
   <h2>Guards</h2>
   <p>
-    A trailing <code>if</code> narrows a clause. The clause only fires if the
+    A trailing <code>when</code> narrows a clause. The clause only fires if the
     guard holds.
   </p>
   <Code code={`match n do
-  x if x < 0     -> "negative"
+  x when x < 0   -> "negative"
   0              -> "zero"
   _              -> "positive"
-end`} file="guards.kex" />
+end`} file="guards.kex" source="examples/guards.kex" />
 </DocsLayout>

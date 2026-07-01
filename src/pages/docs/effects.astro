@@ -29,6 +29,7 @@ end
 # Compile error: pure code cannot call foul code.
 # let bad(path: String) = readConfig(path)`}
     file="purity.kex"
+    source="examples/purity.kex"
   />
 
   <p>
@@ -52,5 +53,6 @@ list.map! { |x| x * 10 }
 # frozen.push!(4)
 # runtime error: Cannot use '!' on immutable binding: frozen`}
     file="mutation.kex"
+    source="examples/mutation.kex"
   />
 </DocsLayout>

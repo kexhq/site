@@ -14,12 +14,12 @@ import Code from "~/components/Code.astro";
 
   <h2>Declaring a trait</h2>
   <Code code={`trait Shape do
-  area      : () -> Float
-  perimeter : () -> Float
+  area      :> Float
+  perimeter :> Float
 
   # default implementation, written against \`this\`
   let describe = "area=\${this.area}, perimeter=\${this.perimeter}"
-end`} file="shape-trait.kex" />
+end`} file="shape-trait.kex" source="examples/shape-trait.kex" />
 
   <h2>Implementing with <code>make</code></h2>
   <Code code={`record Circle do
@@ -40,7 +40,7 @@ make Rectangle, implement: Shape do
   let area      = @width * @height
   let perimeter = 2.0 * (@width + @height)
   let describe  = "Rectangle \${@width}x\${@height} (area=\${this.area})"  # override
-end`} file="shape-impl.kex" />
+end`} file="shape-impl.kex" source="examples/shape-impl.kex" />
 
   <h2>Trait-constrained functions</h2>
   <p>
@@ -51,7 +51,7 @@ end`} file="shape-impl.kex" />
   IO.printLine(s.describe)
 end
 
-shapes.each(&printShape)`} file="trait-constraint.kex" />
+shapes.each(&printShape)`} file="trait-constraint.kex" source="examples/trait-constraint.kex" />
 
   <h2>Built-in traits</h2>
   <p>
