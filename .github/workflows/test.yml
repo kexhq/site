@@ -23,6 +23,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
+          # @kexhq/kex is published from the kexhq/kex repo. Same org, so
+          # GITHUB_TOKEN can read it once that package's "Manage Actions
+          # access" settings grant this repo (kexhq/site) the Read role —
+          # see README for the exact steps. No PAT/secret needed.
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Playwright browsers
         run: npm run test:install
