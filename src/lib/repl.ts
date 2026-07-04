@@ -102,7 +102,7 @@ export async function mountRepl(
 
   const term: TerminalType = new Terminal({
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-    fontSize: 14,
+    fontSize: 20,
     cursorBlink: true,
     theme: { background: "#1b140a", foreground: "#d6d6e6" },
   });
@@ -154,13 +154,43 @@ export async function mountRepl(
   term.writeln("kex — interactive REPL (wasm, in-browser)");
   term.writeln("");
 
+  // The wasm build's underlying read() syscall pulls a large fixed-size
+  // chunk (looks like 1024 bytes) per call, looping its `stdin` callback
+  // until either that many bytes are collected or the callback returns
+  // null. Since the default handler (and a naive override) never returns
+  // null except on cancel, IO.getLine ends up re-prompting via
+  // window.prompt() dozens of times per line just to pad out the chunk —
+  // e.g. ~85 dialogs to deliver an 11-character line.
+  //
+  // Fix: after handing back a full buffered line, return null exactly once
+  // to end that read early with a short read (the line's actual length) —
+  // POSIX read() semantics allow this and the caller only needed the one
+  // line. The call after that prompts fresh, so each real IO.getLine only
+  // shows one dialog.
+  let stdinBuffer: number[] = [];
+  let stdinNeedsPrompt = true;
+  const stdin = (): number | null => {
+    if (stdinBuffer.length === 0) {
+      if (!stdinNeedsPrompt) {
+        stdinNeedsPrompt = true;
+        return null;
+      }
+      const result = window.prompt("Input:");
+      if (result === null) return null; // user cancelled — real EOF
+      stdinBuffer = Array.from(result + "\n", (c) => c.charCodeAt(0));
+    }
+    const code = stdinBuffer.shift() ?? null;
+    if (stdinBuffer.length === 0) stdinNeedsPrompt = false;
+    return code;
+  };
+
   let session: import("@kexhq/kex").Kex;
   try {
     // Loaded from the static copy in public/kex-repl/ (see scripts/sync-kex-wasm.mjs),
     // not the bundled node_modules copy — via nativeImport (see its comment
     // above) so Vite doesn't rewrite this into a `?import`-suffixed request.
     const { Kex } = await nativeImport("/kex-repl/index.mjs");
-    session = await Kex.create();
+    session = await Kex.create({ stdin });
   } catch (err) {
     onStatus?.("error");
     term.writeln("\x1b[31mfailed to load the kex interpreter.\x1b[0m");

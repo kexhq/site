@@ -2,7 +2,7 @@
 import Code from "~/components/Code.astro";
 ---
 
-<h1>Pipelines &amp; UFCS</h1>
+<h1>Function chaining</h1>
 
 <p>
   Because <code>x.f()</code> is just <code>f(x)</code>, you can chain calls
@@ -11,7 +11,7 @@ import Code from "~/components/Code.astro";
   then map, then sum."
 </p>
 
-<Code code={`[1, 2, 3, 4].filter(&.even?).map { |n| n * n }.sum`} replPaste mini />
+<Code code={`[1, 2, 3, 4].filter(&.even?).map { |n| n * n }.sum`} repl />
 
 <p>
   Walk it step by step: <code>filter</code> keeps the even numbers
@@ -25,4 +25,4 @@ import Code from "~/components/Code.astro";
   count in one line:
 </p>
 
-<Code code={`"hello world".split(" ").count`} replPaste mini />
+<Code code={`"hello world".split(" ").count`} repl />

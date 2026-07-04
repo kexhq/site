@@ -18,10 +18,14 @@ import Code from "~/components/Code.astro";
   type-checks. An effect can't sneak into the middle of your logic unnoticed.
 </p>
 
-<Code code={`IO.printLine("hello, effects")`} replPaste mini />
+<Code code={`IO.printLine("hello, effects")`} repl />
 
 <p>
   The REPL's top level (and every <code>main</code>) is implicitly foul, so a
   quick experiment like this just runs. In a real program you'd tuck the IO into
   a small <code>foul</code> function at the edge, and keep everything else pure.
 </p>
+
+<p>Effects run both ways — reading counts too. Click paste and answer the prompt:</p>
+
+<Code code={`IO.getLine()`} repl />

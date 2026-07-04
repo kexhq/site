@@ -10,7 +10,7 @@ import Code from "~/components/Code.astro";
   answer describes the result directly.
 </p>
 
-<Code code={`(1..100).reduce(0, ~(+))`} replPaste mini />
+<Code code={`(1..100).reduce(0, ~(+))`} repl />
 
 <p>
   <code>1..100</code> is a range. <code>reduce</code> walks it carrying an
@@ -24,7 +24,7 @@ import Code from "~/components/Code.astro";
   ideas:
 </p>
 
-<Code code={`(1..10).filter(&.odd?).map { |n| n * n }.sum`} replPaste mini />
+<Code code={`(1..10).filter(&.odd?).map { |n| n * n }.sum`} repl />
 
 <p>
   Range, filter, map, sum — four small functions, one readable line. That's

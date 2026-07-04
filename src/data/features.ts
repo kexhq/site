@@ -6,9 +6,9 @@ export interface Feature {
 
 export const FEATURES: Feature[] = [
   {
-    title: "UFCS & pipelines",
+    title: "Function chaining",
     blurb:
-      "Uniform Function Call Syntax turns plain functions into fluent chains. `value.f(arg)` is exactly `f(value, arg)` — pick whichever reads better.",
+      "Calling `value.f(arg)` is exactly `f(value, arg)`, so plain functions turn into fluent chains — pick whichever reads better.",
     icon: "pipe",
   },
   {

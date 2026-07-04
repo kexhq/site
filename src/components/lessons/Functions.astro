@@ -5,14 +5,22 @@ import Code from "~/components/Code.astro";
 <h1>Functions</h1>
 
 <p>
-  A function literal — a <em>lambda</em> — is written between braces:
-  <code>{"{ |args| body }"}</code>. It's a value, just like a number or a
-  string, so you can pass it to other functions.
+  Name a function with <code>let</code> — it looks like a variable binding,
+  but takes arguments and its body is an expression:
 </p>
 
-<Code code={`[1, 2, 3].map { |n| n * 2 }`} replPaste mini />
+<Code code={`let double(n) = n * 2
+double(21)`} repl />
 
-<Code code={`[1, 2, 3].filter { |n| n > 1 }`} replPaste mini />
+<p>
+  A function literal — a <em>lambda</em> — is the same idea without a name,
+  written between braces: <code>{"{ |args| body }"}</code>. It's a value,
+  just like a number or a string, so you can pass it to other functions.
+</p>
+
+<Code code={`[1, 2, 3].map { |n| n * 2 }`} repl />
+
+<Code code={`[1, 2, 3].filter { |n| n > 1 }`} repl />
 
 <p>
   <code>map</code> applies the lambda to every element; <code>filter</code>
@@ -24,10 +32,10 @@ import Code from "~/components/Code.astro";
 <p>
   When a lambda just calls one method on its argument, there's a shorthand:
   <code>&amp;.method</code> stands in for <code>{"{ |x| x.method }"}</code>.
-  It's common enough that you'll see it in almost every pipeline.
+  It's common enough that you'll see it in almost every chain.
 </p>
 
-<Code code={`[1, 2, 3].map(&.to(String))`} replPaste mini />
+<Code code={`[1, 2, 3].map(&.to(String))`} repl />
 
 <p>
   You can also name functions, declare their types, and define them in

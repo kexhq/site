@@ -84,26 +84,26 @@ test.describe("/repl", () => {
     const prev = page.locator("[data-prev]");
     const next = page.locator("[data-next]");
 
-    // Starts on lesson 1 of 7, Prev disabled.
-    await expect(progress).toHaveText("1 / 7");
+    // Starts on lesson 1 of 9, Prev disabled.
+    await expect(progress).toHaveText("1 / 9");
     await expect(page.locator("[data-lesson-panel=hello-kex]")).toBeVisible();
     await expect(prev).toBeDisabled();
 
     // Next advances to lesson 2 (Variables & types).
     await next.click();
-    await expect(progress).toHaveText("2 / 7");
+    await expect(progress).toHaveText("2 / 9");
     await expect(page.locator("[data-lesson-panel=variables]")).toBeVisible();
     await expect(page.locator("[data-lesson-panel=hello-kex]")).toBeHidden();
     await expect(prev).toBeEnabled();
 
     // Prev returns to lesson 1.
     await prev.click();
-    await expect(progress).toHaveText("1 / 7");
+    await expect(progress).toHaveText("1 / 9");
     await expect(page.locator("[data-lesson-panel=hello-kex]")).toBeVisible();
 
     // Jump to the last lesson: Next should end up disabled.
-    for (let i = 0; i < 6; i++) await next.click();
-    await expect(progress).toHaveText("7 / 7");
+    for (let i = 0; i < 8; i++) await next.click();
+    await expect(progress).toHaveText("9 / 9");
     await expect(next).toBeDisabled();
   });
 
@@ -113,10 +113,24 @@ test.describe("/repl", () => {
   const LESSON_OUTPUT: Record<string, string[]> = {
     "hello-kex": ["Hello, world!", '"olleh" : String', '"olleh" : String'],
     variables: ['"kex" : String', "42 : Int", "6 : Int", "5 : Int", "0 : Int"],
-    functions: ["[2, 4, 6]", "[2, 3]", '["1", "2", "3"]'],
-    "pattern-matching": ['"two" : String', "7 : Int", "5 : Int", "0 : Int"],
+    functions: ["42 : Int", "[2, 4, 6]", "[2, 3]", '["1", "2", "3"]'],
+    "pattern-matching": [
+      '"two" : String',
+      "7 : Int",
+      "5 : Int",
+      "0 : Int",
+      "120 : Int",
+      '"positive" : String',
+    ],
+    records: [
+      "Point {",
+      "12.566371 : Float",
+      "Ok(5) : Result",
+      'Error("div by zero") : Result',
+    ],
+    make: ["Vector2D {"],
     pipelines: ["20 : Int", "2 : Int"],
-    effects: ["hello, effects"],
+    effects: ["hello, effects", '"Kex" : String'],
     "small-project": ["5050 : Int", "165 : Int"],
   };
   const LESSON_ORDER = [
@@ -124,6 +138,8 @@ test.describe("/repl", () => {
     "variables",
     "functions",
     "pattern-matching",
+    "records",
+    "make",
     "pipelines",
     "effects",
     "small-project",
@@ -138,6 +154,10 @@ test.describe("/repl", () => {
 
   for (const slug of LESSON_ORDER) {
     test(`lesson "${slug}" pastes and evaluates`, async ({ page }) => {
+      // The "effects" lesson's IO.getLine() snippet opens a native prompt();
+      // answer it so the paste completes instead of hanging on a dialog.
+      page.on("dialog", (dialog) => dialog.accept("Kex"));
+
       await page.goto("/repl");
       await waitForReady(page);
       await gotoLesson(page, slug);
@@ -162,11 +182,13 @@ test.describe("/repl", () => {
   // opacity > 0 — guards against it being faded out until hover, which users
   // would miss). Content is server-rendered, so no need to wait for wasm.
   const LESSON_TITLE: Record<string, string> = {
-    "hello-kex": "Hello, kex",
+    "hello-kex": "Hello, Kex!",
     variables: "Variables & types",
     functions: "Functions",
     "pattern-matching": "Pattern matching",
-    pipelines: "Pipelines & UFCS",
+    records: "Records & Result",
+    make: "Attaching behavior with make",
+    pipelines: "Function chaining",
     effects: "Effects & purity",
     "small-project": "A small project",
   };

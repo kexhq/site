@@ -14,7 +14,7 @@ import Code from "~/components/Code.astro";
   1 -> "one"
   2 -> "two"
   _ -> "many"
-end`} replPaste mini />
+end`} repl />
 
 <p>
   <code>_</code> is the wildcard: it matches anything, so it works as a
@@ -30,7 +30,7 @@ end`} replPaste mini />
 
 <Code code={`match (3, 4) do
   (a, b) -> a + b
-end`} replPaste mini />
+end`} repl />
 
 <p>
   This is also the honest way to handle an Optional: instead of papering over
@@ -40,9 +40,30 @@ end`} replPaste mini />
 <Code code={`match Just(5) do
   Just(x) -> x
   None -> 0
-end`} replPaste mini />
+end`} repl />
 
 <Code code={`match None do
   Just(x) -> x
   None -> 0
-end`} replPaste mini />
+end`} repl />
+
+<p>
+  Patterns aren't limited to <code>match</code> — a function can be defined in
+  multiple <strong>clauses</strong>, each matching a different shape of
+  argument. Clauses are tried top to bottom, same as match arms:
+</p>
+
+<Code code={`let factorial(0) = 1
+let factorial(n) = n * factorial(n - 1)
+factorial(5)`} repl />
+
+<p>
+  A trailing <code>when</code> narrows a clause with an extra condition — the
+  arm only fires if the guard holds too:
+</p>
+
+<Code code={`match 7 do
+  x when x < 0 -> "negative"
+  0 -> "zero"
+  _ -> "positive"
+end`} repl />

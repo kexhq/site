@@ -10,9 +10,9 @@ import Code from "~/components/Code.astro";
   <code>count</code> an <code>Int</code>, with no annotations needed.
 </p>
 
-<Code code={`let name = "kex"`} replPaste mini />
+<Code code={`let name = "kex"`} repl />
 
-<Code code={`let count = 42`} replPaste mini />
+<Code code={`let count = 42`} repl />
 
 <p>
   A <code>let</code> can't be reassigned. When you need something that
@@ -21,7 +21,7 @@ import Code from "~/components/Code.astro";
 
 <Code code={`var n = 5
 n = n + 1
-n`} replPaste mini />
+n`} repl />
 
 <p>
   There's no <code>null</code> in kex. A value that might be missing is an
@@ -30,6 +30,6 @@ n`} replPaste mini />
   unwraps it, falling back when it's empty.
 </p>
 
-<Code code={`Just(5).or(0)`} replPaste mini />
+<Code code={`Just(5).or(0)`} repl />
 
-<Code code={`None.or(0)`} replPaste mini />
+<Code code={`None.or(0)`} repl />
