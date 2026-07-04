@@ -8,6 +8,9 @@ node_modules/
 # generated types
 .astro/
 
+# synced from node_modules/@kexhq/kex/dist by scripts/sync-kex-wasm.mjs
+public/kex-repl/
+
 # logs
 npm-debug.log*
 yarn-debug.log*

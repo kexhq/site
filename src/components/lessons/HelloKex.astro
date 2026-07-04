@@ -1,0 +1,37 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Hello, kex</h1>
+
+<p>
+  Kex is a functional-first language: immutable by default, pattern matching
+  for control flow, and side effects kept behind a type boundary. Let's start
+  by printing a line.
+</p>
+
+<Code code={`IO.printLine("Hello, world!")`} replPaste mini />
+
+<p>
+  Every kex program has a <code>main</code> entry point, but the REPL runs
+  each line as you type it — so a bare expression just evaluates. Try editing
+  the string and pressing Enter.
+</p>
+
+<p>
+  Now the language's signature feature: <strong>Uniform Function Call
+  Syntax</strong>. Any function can be called as if it were a method on its
+  first argument. <code>x.f()</code> and <code>f(x)</code> mean exactly the
+  same thing — there's no special "method" kind, only functions.
+</p>
+
+<Code code={`"hello".reverse`} replPaste mini />
+
+<Code code={`reverse("hello")`} replPaste mini />
+
+<p>
+  Both print <code>"olleh"</code>. The dot form reads like a method call; the
+  paren form reads like a function call. Pick whichever makes your code
+  clearest — they compile to the same thing, which is why fluent pipelines
+  work without any special plumbing.
+</p>

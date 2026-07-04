@@ -1,0 +1,28 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Pipelines &amp; UFCS</h1>
+
+<p>
+  Because <code>x.f()</code> is just <code>f(x)</code>, you can chain calls
+  left to right — each function takes the previous result as its first
+  argument. The whole chain reads like a sentence: "take this, then filter,
+  then map, then sum."
+</p>
+
+<Code code={`[1, 2, 3, 4].filter(&.even?).map { |n| n * n }.sum`} replPaste mini />
+
+<p>
+  Walk it step by step: <code>filter</code> keeps the even numbers
+  (<code>[2, 4]</code>), <code>map</code> squares each
+  (<code>[4, 16]</code>), and <code>sum</code> adds them (<code>20</code>).
+  No intermediate variables, no mutation — the original list is untouched.
+</p>
+
+<p>
+  The same dot works on strings and ranges too. A sentence becomes a word
+  count in one line:
+</p>
+
+<Code code={`"hello world".split(" ").count`} replPaste mini />

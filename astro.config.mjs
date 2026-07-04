@@ -13,8 +13,9 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-      // Allow LAN/mDNS access to the dev server (e.g. http://mercury.local:4321)
-      allowedHosts: ["mercury.local", "kex.local", true],
+      // Allow LAN/mDNS access to the dev server (e.g. http://mercury.local:4321).
+      // `true` permits any host so arbitrary local names work without an allowlist.
+      allowedHosts: true,
     },
   },
   build: {
