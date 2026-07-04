@@ -62,10 +62,10 @@ test.describe("/repl", () => {
 
     // Use the reverse snippet: its output "olleh" appears only in the result,
     // never in the echoed source line, so counting it catches a double-firing
-    // listener cleanly. It's the 2nd paste button in the hello-kex panel.
+    // listener cleanly. It's the 3rd paste button in the hello-kex panel.
     await page
       .locator("[data-lesson-panel=hello-kex] [data-paste-to-repl]")
-      .nth(1)
+      .nth(2)
       .click();
 
     const expected = "olleh";
@@ -129,9 +129,22 @@ test.describe("/repl", () => {
   // produce their expected output. Values were verified against the @kexhq/kex
   // interpreter; a lesson may have several snippets, listed in DOM order.
   const LESSON_OUTPUT: Record<string, string[]> = {
-    "hello-kex": ["Hello, world!", '"olleh" : String', '"olleh" : String'],
+    "hello-kex": [
+      "Hello, world!",
+      '"Hello, world!" : String',
+      '"olleh" : String',
+      '"olleh" : String',
+    ],
     variables: ['"kex" : String', "42 : Int", "6 : Int", "5 : Int", "0 : Int", "[1, 2, 3, 4, 5]"],
-    functions: ["42 : Int", "[2, 4, 6]", "[2, 3]", '["1", "2", "3"]'],
+    functions: [
+      "let double(n) = n * 2",
+      "42 : Int",
+      "42 : Int",
+      "24 : Int",
+      "[2, 4, 6]",
+      "[2, 3]",
+      '["1", "2", "3"]',
+    ],
     "pattern-matching": [
       '"two" : String',
       "7 : Int",
@@ -142,11 +155,19 @@ test.describe("/repl", () => {
     ],
     records: [
       "Point {",
-      "12.566371 : Float",
+      "9.0 : Float",
       "Ok(5) : Result",
       'Error("div by zero") : Result',
+      "Oops: div by zero",
     ],
-    make: ["Vector2D {"],
+    make: [
+      "make Integer do",
+      "true : Bool",
+      "Vector2D {",
+      "make [X] do",
+      "None : None",
+      "Just(11) : Option",
+    ],
     chaining: ["20 : Int", "2 : Int"],
     effects: ["hello, effects", '"Kex" : String'],
     "small-project": ["5050 : Int", "165 : Int"],
