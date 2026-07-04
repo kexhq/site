@@ -5,12 +5,29 @@ import Code from "~/components/Code.astro";
 <h1>Attaching behavior with <code>make</code></h1>
 
 <p>
-  There's no class keyword in kex. Behavior attaches to an existing record
-  through <code>make</code> — including operators, so <code>+</code> resolves
-  per receiver type just like any other method:
+  There's no class keyword in Kex. Behavior attaches to an existing type through <code
+    >make</code
+  > (including built-in types like <code>Integer</code>, <code>[X]</code>).
 </p>
 
-<Code code={`record Vector2D do
+<Code
+  code={`make Integer do
+  let dividesBy?(divisor: Integer) -> Bool do
+    return this.modulo(divisor) == 0
+  end
+end`}
+  repl
+/>
+
+<Code code={`42.dividesBy?(7)`} repl />
+
+<p>
+  Operators like <code>+</code>, can also be defined, so <code>+</code> resolves per
+  receiver type just like any other function:
+</p>
+
+<Code
+  code={`record Vector2D do
   x : Float
   y : Float
 end
@@ -21,12 +38,33 @@ make Vector2D do
   end
 end
 
-Vector2D { x: 1.0, y: 2.0 } + Vector2D { x: 3.0, y: 4.0 }`} repl />
+let v1 = Vector2D { x: 1.0, y: 2.0 }
+let v2 = Vector2D { x: 3.0, y: 4.0 }
+let v = v1 + v2`}
+  repl
+/>
 
 <p>
-  Inside <code>make</code>, <code>@field</code> is shorthand for <code
-    >this.field</code
-  >. Attach as many methods and operators as the type needs — there's no
-  inheritance, so behavior always lives right next to the type it's written
-  for.
+  Inside <code>make</code>, <code>this</code> is the receiver, and <code
+    >@field</code
+  > is shorthand for <code>this.field</code>. Attach as many methods and
+  operators as the type needs — there's no inheritance, so behavior always lives
+  right next to the type it's written for.
 </p>
+
+<p>
+  You can also do pattern matching on the receiver in <code>make</code> clauses, using
+  the <code>@</code> character for the match specifier:
+</p>
+
+<Code
+  code={`make [X] do
+  head : X?
+  let head(@[]) = None
+  let head(@[x|_]) = Just(x)
+end`}
+  repl
+/>
+
+<Code code={`[].head`} repl />
+<Code code={`[11, 2, 4].head`} repl />

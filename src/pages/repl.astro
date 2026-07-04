@@ -7,7 +7,7 @@ import Functions from "~/components/lessons/Functions.astro";
 import PatternMatching from "~/components/lessons/PatternMatching.astro";
 import Records from "~/components/lessons/Records.astro";
 import Make from "~/components/lessons/Make.astro";
-import Pipelines from "~/components/lessons/Pipelines.astro";
+import Chaining from "~/components/lessons/Chaining.astro";
 import Effects from "~/components/lessons/Effects.astro";
 import SmallProject from "~/components/lessons/SmallProject.astro";
 
@@ -18,7 +18,7 @@ const LESSON_COMPONENTS: Record<string, any> = {
   "pattern-matching": PatternMatching,
   records: Records,
   make: Make,
-  pipelines: Pipelines,
+  chaining: Chaining,
   effects: Effects,
   "small-project": SmallProject,
 };
@@ -90,6 +90,28 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
               1 / {lessons.length}
             </span>
           </div>
+
+          <details class="lesson-toc mt-3">
+            <summary>Contents</summary>
+            <nav class="mt-2 flex flex-col gap-3">
+              {
+                TUTORIAL_NAV.map((section) => (
+                  <div>
+                    <p class="lesson-toc-heading">{section.heading}</p>
+                    <ul class="mt-1 flex flex-col">
+                      {section.entries.map((entry) => (
+                        <li>
+                          <a href={`#${entry.slug}`} data-lesson-link={entry.slug}>
+                            {entry.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              }
+            </nav>
+          </details>
 
           <div class="mt-4">
             {
@@ -165,6 +187,48 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     padding: 0.1em 0.35em;
   }
 
+  .lesson-toc summary {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-accent-strong);
+    cursor: pointer;
+    list-style: none;
+  }
+  .lesson-toc summary::-webkit-details-marker {
+    display: none;
+  }
+  .lesson-toc summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 0.4em;
+    transition: transform 0.15s;
+  }
+  .lesson-toc[open] summary::before {
+    transform: rotate(90deg);
+  }
+  .lesson-toc-heading {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-faint);
+  }
+  .lesson-toc a {
+    display: block;
+    padding: 0.2rem 0;
+    font-size: 13px;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+  .lesson-toc a:hover {
+    color: var(--color-accent-strong);
+  }
+  .lesson-toc a[data-active] {
+    color: var(--color-accent-strong);
+    font-weight: 600;
+  }
+
   .lesson-nav-btn {
     font-family: inherit;
     font-size: 13px;
@@ -195,22 +259,48 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
   const progressEl = document.querySelector<HTMLElement>("[data-progress]");
   const prevBtn = document.querySelector<HTMLButtonElement>("[data-prev]");
   const nextBtn = document.querySelector<HTMLButtonElement>("[data-next]");
+  const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]"));
+  const tocDetails = document.querySelector<HTMLDetailsElement>(".lesson-toc");
+  const slugs = panels.map((p) => p.dataset.lessonPanel!);
 
   let index = 0;
 
-  function showLesson(i: number) {
+  // Deep link so a lesson can be bookmarked/shared: /repl#<slug>. Falls back
+  // to the first lesson for an unknown or missing hash.
+  function indexFromHash(): number {
+    const slug = location.hash.slice(1);
+    const i = slugs.indexOf(slug);
+    return i === -1 ? 0 : i;
+  }
+
+  function showLesson(i: number, { updateHash = true } = {}) {
     index = Math.max(0, Math.min(panels.length - 1, i));
+    const slug = slugs[index];
     panels.forEach((panel, n) => {
       panel.hidden = n !== index;
     });
     if (progressEl) progressEl.textContent = `${index + 1} / ${panels.length}`;
     if (prevBtn) prevBtn.disabled = index === 0;
     if (nextBtn) nextBtn.disabled = index === panels.length - 1;
+    tocLinks.forEach((link) => {
+      link.toggleAttribute("data-active", link.dataset.lessonLink === slug);
+    });
+    if (updateHash && location.hash.slice(1) !== slug) {
+      history.replaceState(null, "", `#${slug}`);
+    }
   }
 
   prevBtn?.addEventListener("click", () => showLesson(index - 1));
   nextBtn?.addEventListener("click", () => showLesson(index + 1));
-  showLesson(0);
+  tocLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      showLesson(slugs.indexOf(link.dataset.lessonLink!));
+      if (tocDetails) tocDetails.open = false;
+    });
+  });
+  window.addEventListener("hashchange", () => showLesson(indexFromHash()));
+  showLesson(indexFromHash());
 
   const container = document.getElementById("repl-terminal");
   const statusEl = document.getElementById("repl-status");

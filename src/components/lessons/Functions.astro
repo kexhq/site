@@ -5,28 +5,56 @@ import Code from "~/components/Code.astro";
 <h1>Functions</h1>
 
 <p>
-  Name a function with <code>let</code> — it looks like a variable binding,
-  but takes arguments and its body is an expression:
+  Functions are also defined with <code>let</code> similarly to value bindings, but
+  they can also take arguments and have function bodies, which can contain multiple
+  expressions:
 </p>
 
-<Code code={`let double(n) = n * 2
-double(21)`} repl />
+<Code code={`let double(n) = n * 2`} repl />
 
 <p>
-  A function literal — a <em>lambda</em> — is the same idea without a name,
-  written between braces: <code>{"{ |args| body }"}</code>. It's a value,
-  just like a number or a string, so you can pass it to other functions.
+  To call them you can use the standard <code>f(x)</code> syntax, or the dot form
+  <code>x.f()</code>
+</p>
+
+<Code code={`double(21)`} repl />
+
+<Code code={`21.double`} repl />
+
+Bigger functions usually consist of multiple expressions, where the last one is
+the return value:
+<Code
+  code={`let fact(n: Integer) do 
+  return 1 if n <= 1
+
+  n * fact(n - 1)
+end
+
+fact(4)`}
+  repl
+/>
+<p>
+  You can create functions, without naming them, these are called <em
+    >lambdas</em
+  >. These are very useful; for example, you can pass these as parameters to
+  other functions, as: <code>{"{ |args| body }"}</code>:
 </p>
 
 <Code code={`[1, 2, 3].map { |n| n * 2 }`} repl />
 
+<p>
+  The above goes through the list and applies the lambda to each element,
+  returning a new list, doubling each element. The original list is unchanged,
+  as kex is immutable by default.
+</p>
+
 <Code code={`[1, 2, 3].filter { |n| n > 1 }`} repl />
 
 <p>
-  <code>map</code> applies the lambda to every element; <code>filter</code>
-  keeps the ones for which it returns true. Notice there are no loops here —
-  you describe <em>what</em> to compute, and the list handles the iteration.
-  Each call returns a fresh list; the original is never changed.
+  This one on the other hand uses <code>filter</code>
+  which keeps the ones for which the <em>lambda</em> returns true. Notice there are
+  no loops here, you describe
+  <em>what</em> to compute, and the list handles the iteration.
 </p>
 
 <p>
@@ -36,9 +64,3 @@ double(21)`} repl />
 </p>
 
 <Code code={`[1, 2, 3].map(&.to(String))`} repl />
-
-<p>
-  You can also name functions, declare their types, and define them in
-  multiple clauses that pattern-match on the arguments — which is exactly
-  what the next lesson covers.
-</p>

@@ -5,28 +5,30 @@ import Code from "~/components/Code.astro";
 <h1>A small project</h1>
 
 <p>
-  Time to put the pieces together. A classic exercise: sum the numbers from 1
-  to 100. The imperative answer is a loop with a running total; the kex
-  answer describes the result directly.
+  Time to put the pieces together. A classic exercise: sum the numbers from 1 to
+  100. The imperative answer is a loop with a running total; the kex answer
+  describes the result directly.
 </p>
 
 <Code code={`(1..100).reduce(0, ~(+))`} repl />
 
 <p>
-  <code>1..100</code> is a range. <code>reduce</code> walks it carrying an
-  accumulator, starting at <code>0</code>, and <code>~(+)</code> is a
-  reference to the <code>+</code> operator — so each step adds the next
-  number to the running total. Out comes <code>5050</code>.
+  <code>1..100</code> is a range. <code>reduce</code> walks it carrying an accumulator,
+  starting at <code>0</code>, and <code>~(+)</code> is a reference to the <code
+    >+</code
+  > operator — so each step adds the next number to the running total. Out comes <code
+    >5050</code
+  >.
 </p>
 
 <p>
-  Here's another — the sum of the odd squares up to ten, built from the same
+  Here's another: the sum of the odd squares up to ten, built from the same
   ideas:
 </p>
 
 <Code code={`(1..10).filter(&.odd?).map { |n| n * n }.sum`} repl />
 
 <p>
-  Range, filter, map, sum — four small functions, one readable line. That's
-  most of kex in a nutshell.
+  Range, filter, map, sum, four small functions, one readable line. That's most
+  of Kex in a nutshell.
 </p>

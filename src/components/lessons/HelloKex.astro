@@ -18,7 +18,7 @@ import Code from "~/components/Code.astro";
   runs each line as you type it, so a bare expression just evaluates. Try editing
   the string and pressing Enter:
 </p>
-<Code code={`"Hello, world!"`} bare compact />
+<Code code={`"Hello, world!"`} repl />
 <p>
   In the next line it will also print out the type next to the value, which is <code
     >String</code
@@ -26,11 +26,9 @@ import Code from "~/components/Code.astro";
 </p>
 
 <p>
-  Now the language's signature feature: any function can be called as if it
-  were a method on its first argument. <code>x.f()</code> and <code
-    >f(x)</code
-  > mean exactly the same thing — there's no special "method" kind, only
-  functions.
+  Now the language's signature feature: any function can be called as if it were
+  a method on its first argument. <code>x.f()</code> and <code>f(x)</code> mean exactly
+  the same thing — there's no special "method" kind, only functions.
 </p>
 
 <Code code={`"hello".reverse`} repl />
@@ -40,6 +38,5 @@ import Code from "~/components/Code.astro";
 <p>
   Both print <code>"olleh"</code>. The dot form reads like a method call; the
   paren form reads like a function call. Pick whichever makes your code
-  clearest — they compile to the same thing, which is why fluent chains work
-  without any special plumbing.
+  clearest.
 </p>

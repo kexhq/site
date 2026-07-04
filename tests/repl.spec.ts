@@ -107,12 +107,30 @@ test.describe("/repl", () => {
     await expect(next).toBeDisabled();
   });
 
+  test("a lesson can be deep-linked and bookmarked", async ({ page }) => {
+    // Loading /repl#<slug> directly opens on that lesson, not lesson 1.
+    await page.goto("/repl#records");
+    await expect(page.locator("[data-lesson-panel=records]")).toBeVisible();
+    await expect(page.locator("[data-progress]")).toHaveText("5 / 9");
+
+    // The Contents menu lists every lesson as a real link and jumps to it.
+    await page.locator(".lesson-toc summary").click();
+    await page.locator("[data-lesson-link=make]").click();
+    await expect(page.locator("[data-lesson-panel=make]")).toBeVisible();
+    await expect(page).toHaveURL(/#make$/);
+
+    // Prev/Next keep the URL in sync too, so the current lesson stays
+    // bookmarkable after navigating with the buttons.
+    await page.locator("[data-next]").click();
+    await expect(page).toHaveURL(/#chaining$/);
+  });
+
   // Each lesson's "Paste to REPL" snippets must run in the live terminal and
   // produce their expected output. Values were verified against the @kexhq/kex
   // interpreter; a lesson may have several snippets, listed in DOM order.
   const LESSON_OUTPUT: Record<string, string[]> = {
     "hello-kex": ["Hello, world!", '"olleh" : String', '"olleh" : String'],
-    variables: ['"kex" : String', "42 : Int", "6 : Int", "5 : Int", "0 : Int"],
+    variables: ['"kex" : String', "42 : Int", "6 : Int", "5 : Int", "0 : Int", "[1, 2, 3, 4, 5]"],
     functions: ["42 : Int", "[2, 4, 6]", "[2, 3]", '["1", "2", "3"]'],
     "pattern-matching": [
       '"two" : String',
@@ -129,7 +147,7 @@ test.describe("/repl", () => {
       'Error("div by zero") : Result',
     ],
     make: ["Vector2D {"],
-    pipelines: ["20 : Int", "2 : Int"],
+    chaining: ["20 : Int", "2 : Int"],
     effects: ["hello, effects", '"Kex" : String'],
     "small-project": ["5050 : Int", "165 : Int"],
   };
@@ -140,7 +158,7 @@ test.describe("/repl", () => {
     "pattern-matching",
     "records",
     "make",
-    "pipelines",
+    "chaining",
     "effects",
     "small-project",
   ];
@@ -188,7 +206,7 @@ test.describe("/repl", () => {
     "pattern-matching": "Pattern matching",
     records: "Records & Result",
     make: "Attaching behavior with make",
-    pipelines: "Function chaining",
+    chaining: "Function chaining",
     effects: "Effects & purity",
     "small-project": "A small project",
   };

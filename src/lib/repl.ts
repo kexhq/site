@@ -69,6 +69,22 @@ function findWordStart(s: string, end: number): number {
   return i;
 }
 
+// Word-by-word cursor movement (Option/Alt+Left/Right, Ctrl+Left/Right),
+// skipping over any break characters the cursor already sits next to before
+// crossing the adjacent word — same word definition as tab completion.
+function prevWordStart(s: string, pos: number): number {
+  let i = pos;
+  while (i > 0 && WORD_BREAK_CHARS.indexOf(s[i - 1]) !== -1) i--;
+  return findWordStart(s, i);
+}
+
+function nextWordEnd(s: string, pos: number): number {
+  let i = pos;
+  while (i < s.length && WORD_BREAK_CHARS.indexOf(s[i]) !== -1) i++;
+  while (i < s.length && WORD_BREAK_CHARS.indexOf(s[i]) === -1) i++;
+  return i;
+}
+
 function longestCommonPrefix(strs: string[]): string {
   if (strs.length === 0) return "";
   let prefix = strs[0];
@@ -341,6 +357,16 @@ export async function mountRepl(
           cursor--;
           redrawLine();
         }
+        return;
+      case "\x1b[1;3D": // Option/Alt+Left
+      case "\x1b[1;5D": // Ctrl+Left
+        cursor = prevWordStart(line, cursor);
+        redrawLine();
+        return;
+      case "\x1b[1;3C": // Option/Alt+Right
+      case "\x1b[1;5C": // Ctrl+Right
+        cursor = nextWordEnd(line, cursor);
+        redrawLine();
         return;
       case "\x1b[H":
       case "\x1b[1~":

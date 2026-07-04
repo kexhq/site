@@ -5,14 +5,15 @@ import Code from "~/components/Code.astro";
 <h1>Effects &amp; purity</h1>
 
 <p>
-  Functions in kex are <strong>pure</strong> by default: the same input always yields
+  Functions in Kex are <strong>pure</strong> by default: the same input always yields
   the same output, and calling them changes nothing about the outside world. It's
-  a strong guarantee — you can reason about any function in isolation, and refactor
+  a strong guarantee, you can reason about any function in isolation, and refactor
   freely.
 </p>
 
 <p>
-  Side effects — printing, reading a file, talking to the network — live in
+  Side effects, like printing, reading a file, talking to the network — must
+  live in
   <code>foul</code> functions instead. The rule that keeps things honest:
   <em>pure code cannot call foul code</em>, enforced when the program
   type-checks. An effect can't sneak into the middle of your logic unnoticed.
@@ -26,6 +27,8 @@ import Code from "~/components/Code.astro";
   a small <code>foul</code> function at the edge, and keep everything else pure.
 </p>
 
-<p>Effects run both ways — reading counts too. Click paste and answer the prompt:</p>
+<p>
+  Effects run both ways, reading counts too. Click paste and answer the prompt:
+</p>
 
 <Code code={`IO.getLine()`} repl />
