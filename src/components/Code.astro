@@ -2,6 +2,7 @@
 import { highlightKex } from "~/lib/highlight";
 import { repoBlob } from "~/data/site";
 import { playgroundHref } from "~/lib/share";
+import PlaygroundButton from "~/components/PlaygroundButton.astro";
 
 interface Props {
   code: string;
@@ -101,31 +102,7 @@ const playgroundLink =
           <span class="font-mono text-[12px] text-[#8a8aa0]">{label}</span>
         )}
         <div class="ml-auto flex items-center gap-1.5">
-          {playgroundLink && (
-            <a
-              href={playgroundLink}
-              target="_blank"
-              rel="noopener"
-              class="hidden items-center gap-1 rounded-md px-2 py-1 font-mono text-[11px] text-[#e6c178] transition hover:bg-white/5 hover:text-[#f0d4a0] sm:inline-flex"
-              aria-label="Open in Playground"
-              title="Open in Playground"
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-              Playground
-            </a>
-          )}
+          {playgroundLink && <PlaygroundButton href={playgroundLink} />}
           <button
             type="button"
             data-copy
@@ -234,31 +211,6 @@ const playgroundLink =
         </svg>
         Paste to REPL
       </button>
-
-      {playgroundLink && (
-        <a
-          href={playgroundLink}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1 rounded-md bg-[var(--color-accent-soft)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--color-accent-ink)] transition hover:bg-[var(--color-line-strong)]"
-          aria-label="Open in Playground"
-        >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-          Playground
-        </a>
-      )}
 
       <button
         type="button"
