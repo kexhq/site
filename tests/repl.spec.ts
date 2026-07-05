@@ -169,7 +169,7 @@ test.describe("/repl", () => {
       "Just(11) : Option",
     ],
     chaining: ["20 : Int", "2 : Int"],
-    effects: ["hello, effects", '"Kex" : String'],
+    purity: ["hello, effects", '"Kex" : String'],
     "small-project": ["5050 : Int", "165 : Int"],
   };
   const LESSON_ORDER = [
@@ -180,7 +180,7 @@ test.describe("/repl", () => {
     "records",
     "make",
     "chaining",
-    "effects",
+    "purity",
     "small-project",
   ];
 
@@ -193,7 +193,7 @@ test.describe("/repl", () => {
 
   for (const slug of LESSON_ORDER) {
     test(`lesson "${slug}" pastes and evaluates`, async ({ page }) => {
-      // The "effects" lesson's IO.getLine() snippet opens a native prompt();
+      // The "purity" lesson's IO.getLine() snippet opens a native prompt();
       // answer it so the paste completes instead of hanging on a dialog.
       page.on("dialog", (dialog) => dialog.accept("Kex"));
 
@@ -228,7 +228,7 @@ test.describe("/repl", () => {
     records: "Records & Result",
     make: "Attaching behavior with make",
     chaining: "Function chaining",
-    effects: "Purity",
+    purity: "Purity",
     "small-project": "A small project",
   };
 

@@ -426,7 +426,7 @@ const grouped = categories
     type SavedProgram,
   } from "~/lib/playground-store";
   import { encodeCodeHash, readCodeFromHash, replaceHash } from "~/lib/share";
-  import { EXAMPLES } from "~/data/examples";
+  import { EXAMPLES, exampleFilename } from "~/data/examples";
 
   // ---------------------------------------------------------------------------
   // Element handles
@@ -621,16 +621,20 @@ const grouped = categories
     if (idx === -1) return;
     const tab = tabs[idx]!;
 
-    // Confirm for non-empty content. "Empty" = the buffer is whitespace only
-    // OR identical to its starting point (starter / pristine example).
+    // Saved tabs always prompt — the user explicitly saved them, so deletion
+    // is destructive. Transient tabs skip the prompt when the buffer is just
+    // the starter (a fresh "+" tab the user never touched) so closing a row
+    // of fresh tabs isn't a confirm-dialog gauntlet.
     const code =
       tab.id === activeTabId && handle ? handle.getValue() : tab.code;
-    const isEmpty = code.trim().length === 0 || code === STARTER_CODE;
-    if (!isEmpty) {
+    const isPristineTransient =
+      tab.isTransient &&
+      (code.trim().length === 0 || code === STARTER_CODE);
+    if (!isPristineTransient) {
       const verb = tab.isTransient ? "Discard" : "Delete";
       const name = tab.name || "this program";
-      // Use window.confirm for v1 — simple, accessible enough, no custom UI
-      // to maintain. We can graduate to an inline confirm later.
+      // window.confirm for v1 — simple, accessible enough, no custom UI to
+      // maintain. Can graduate to an inline confirm later.
       if (!window.confirm(`${verb} "${name}"? This can't be undone.`)) {
         return;
       }
@@ -713,7 +717,10 @@ const grouped = categories
   // ---------------------------------------------------------------------------
   function startRename(tabId: string) {
     const tab = tabs.find((t) => t.id === tabId);
-    if (!tab || tab.isTransient) return;
+    if (!tab) return;
+    // Saved tabs: rename persists via the store. Transient tabs: rename lives
+    // only in memory + the URL hash (which is what makes a tab name visible
+    // to anyone the user shares the link with before saving).
     const nameSpan = tabBarEl.querySelector(
       `.pg-tab[data-tab-id="${cssEscape(tabId)}"] .pg-tab-name`,
     ) as HTMLElement | null;
@@ -737,9 +744,10 @@ const grouped = categories
       // Re-render to pick up the title attribute update + re-clamp.
       renderTabs();
       if (next !== original) {
-        renameProgram(tab.id, next);
-        // If we just renamed the active tab, the URL hash should reflect the
-        // new name so a copied link carries it forward.
+        // Only push to the store for saved tabs — transient renames live in
+        // memory only. Either way, refresh the URL hash so the address bar
+        // (and any freshly-copied share link) carries the new name.
+        if (!tab.isTransient) renameProgram(tab.id, next);
         if (tab.id === activeTabId) {
           refreshUrlForActive();
         }
@@ -947,14 +955,8 @@ const grouped = categories
 
   // Examples open in a new transient tab — keeps the user's other work intact
   // and matches the "transient + Save as new" model from the design pass.
-  // Tab name is a dummy `.kex` filename derived from the example's source
-  // path, falling back to `<slug>.kex` for README-sourced snippets that
-  // don't have a real file.
-  function exampleTabName(ex: { slug: string; source: string }): string {
-    const base = ex.source.split("/").pop() ?? "";
-    if (base.endsWith(".kex")) return base;
-    return `${ex.slug}.kex`;
-  }
+  // The tab name (and the URL hash) uses `exampleFilename(ex)` so the same
+  // `.kex` filename flows through to anyone opening a shared link.
 
   examplesSelect.addEventListener("change", () => {
     const slug = examplesSelect.value;
@@ -970,7 +972,7 @@ const grouped = categories
       ...tabs,
       {
         id,
-        name: exampleTabName(ex),
+        name: exampleFilename(ex),
         isTransient: true,
         code,
         output: { text: "(idle — press Run)", state: "idle" },
@@ -981,7 +983,7 @@ const grouped = categories
     outputEl.textContent = "(idle — press Run)";
     outputEl.dataset.state = "idle";
     setActive(null);
-    replaceHash(encodeCodeHash(code, exampleTabName(ex)));
+    replaceHash(encodeCodeHash(code, exampleFilename(ex)));
     renderTabs();
     setTimeout(wrapRun, 0);
   });

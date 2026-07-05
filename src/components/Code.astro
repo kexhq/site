@@ -20,17 +20,19 @@ interface Props {
   output?: string;
   repl?: boolean;
   /**
-   * If set, renders an "Open in Playground" link that loads this code into the
-   * playground via a share-style URL. Pass the *runnable* program — usually
-   * the matching Example's `fullCode`, not the trimmed snippet shown here —
-   * so the playground opens with something that actually evaluates.
+   * If set, renders an "Open in Playground" link (opens in a new tab) that
+   * loads this code into the playground via a share-style URL.
    *
    * Accepts either a bare string (code only) or `{ code, name }` to also
    * embed a filename in the URL — the playground uses it as the tab name
    * on the receiving side, so example links open as `fact.kex` rather than
    * the generic "Shared".
+   *
+   * Defaults ON: when undefined, the link targets the displayed `code` and
+   * derives a name from the current page's URL slug (so `/docs/functions/`
+   * becomes `functions.kex`). Pass `null` to explicitly disable.
    */
-  openInPlayground?: string | { code: string; name?: string };
+  openInPlayground?: string | { code: string; name?: string } | null;
 }
 
 const {
@@ -51,12 +53,30 @@ const hasOutput = typeof output === "string" && output.trim().length > 0;
 const hasTop = bare || !repl;
 const label = file ?? title;
 
+// Derive a default `.kex` filename from the current page's URL slug —
+// `/docs/functions/` becomes `functions.kex`. Falls back to `snippet.kex`
+// for the root page or unusual paths. Used only when the caller didn't
+// explicitly pass `openInPlayground` with its own name.
+const pageSlug =
+  Astro.url.pathname.split("/").filter(Boolean).pop() ?? "snippet";
+const defaultPlaygroundName = `${pageSlug}.kex`;
+
 // Normalize the openInPlayground prop into { code, name? } so the link builder
 // only has one shape to deal with. Bare strings still work for back-compat.
-const playgroundTarget =
-  typeof openInPlayground === "string"
-    ? { code: openInPlayground }
-    : openInPlayground;
+// When the prop is undefined (the common case), default to encoding the
+// displayed snippet under the page-derived name so every Code block on the
+// docs "just works" without each call site having to opt in. Pass `null`
+// explicitly to suppress the link.
+let playgroundTarget: { code: string; name?: string } | null;
+if (openInPlayground === null) {
+  playgroundTarget = null;
+} else if (typeof openInPlayground === "string") {
+  playgroundTarget = { code: openInPlayground };
+} else if (openInPlayground) {
+  playgroundTarget = openInPlayground;
+} else {
+  playgroundTarget = { code, name: defaultPlaygroundName };
+}
 const playgroundLink =
   playgroundTarget && playgroundTarget.code.length > 0
     ? playgroundHref(playgroundTarget.code, playgroundTarget.name)
@@ -84,6 +104,8 @@ const playgroundLink =
           {playgroundLink && (
             <a
               href={playgroundLink}
+              target="_blank"
+              rel="noopener"
               class="hidden items-center gap-1 rounded-md px-2 py-1 font-mono text-[11px] text-[#e6c178] transition hover:bg-white/5 hover:text-[#f0d4a0] sm:inline-flex"
               aria-label="Open in Playground"
               title="Open in Playground"
@@ -216,6 +238,8 @@ const playgroundLink =
       {playgroundLink && (
         <a
           href={playgroundLink}
+          target="_blank"
+          rel="noopener"
           class="inline-flex items-center gap-1 rounded-md bg-[var(--color-accent-soft)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--color-accent-ink)] transition hover:bg-[var(--color-line-strong)]"
           aria-label="Open in Playground"
         >
