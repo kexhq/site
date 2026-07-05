@@ -1,0 +1,75 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Records &amp; Result</h1>
+
+<p>
+  Kex models data directly. A <code>record</code> is a product type. Named, typed
+  fields, built with braces:
+</p>
+
+<Code
+  code={`record Point do
+  x : Float
+  y : Float
+end
+
+let p = Point { x: 1.0, y: 2.0 }`}
+  repl
+/>
+
+<p>
+  A <code>type</code> union describes a value that's one of several shapes. Match
+  on it exactly like you matched <code>Just</code>/<code>None</code> in the last lesson:
+</p>
+
+<Code
+  code={`type Shape = Circle(Float) | Square(Float)
+
+let area(s) = match s do
+  Circle(r) -> Math.PI * r * r
+  Square(s) -> s * s
+end
+
+let c = Circle(2.0)
+let s = Square(3.0)
+
+area(c)
+area(s)
+`}
+  repl
+/>
+
+<p>
+  <strong>Result</strong> is a union built into the prelude (the standard library
+  of Kex) for functions that can fail: <code>Ok(value)</code> or <code
+    >Error(reason)</code
+  >. Write it as either <code>Result&lt;T, E&gt;</code> or you can use the syntax
+  sugar <code>T or! E</code> in a signature.
+</p>
+
+<Code
+  code={`let safeDiv(a, b) -> Int or! String do
+  return Error("div by zero") if b == 0
+  return Ok(a / b)
+end
+
+safeDiv(10, 2)`}
+  repl
+/>
+
+<Code code={`safeDiv(10, 0)`} repl />
+
+<p>
+  Failure is a value, not an exception, <code>match</code> handles both cases explicitly,
+  the same honest way you handled <code>None</code>.
+</p>
+
+<Code
+  code={`match safeDiv(10, 0) do
+  Ok(x) -> x
+  Error(msg) -> IO.printError("Oops: " + msg)
+end`}
+  repl
+/>

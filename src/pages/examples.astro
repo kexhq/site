@@ -12,7 +12,7 @@ const grouped = categories
 
 <BaseLayout
   title="Examples — kex"
-  description="A tour of Kex through runnable examples: records, UFCS pipelines, pattern matching, Result/Optional, lazy streams, traits, and DSLs."
+  description="A tour of Kex through runnable examples: records, function chaining, pattern matching, Result/Optional, lazy streams, traits, and DSLs."
 >
   <section class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]">
     <div class="container-page py-14">
@@ -95,7 +95,7 @@ const grouped = categories
   </section>
 </BaseLayout>
 
-<script is:inline>
+<script>
   (function () {
     const pills = document.querySelectorAll<HTMLButtonElement>(".filter-pill");
     const items = document.querySelectorAll<HTMLElement>(".example-item");

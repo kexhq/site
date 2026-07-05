@@ -1,0 +1,34 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Effects &amp; purity</h1>
+
+<p>
+  Functions in Kex are <strong>pure</strong> by default: the same input always yields
+  the same output, and calling them changes nothing about the outside world. It's
+  a strong guarantee, you can reason about any function in isolation, and refactor
+  freely.
+</p>
+
+<p>
+  Side effects, like printing, reading a file, talking to the network — must
+  live in
+  <code>foul</code> functions instead. The rule that keeps things honest:
+  <em>pure code cannot call foul code</em>, enforced when the program
+  type-checks. An effect can't sneak into the middle of your logic unnoticed.
+</p>
+
+<Code code={`IO.printLine("hello, effects")`} repl />
+
+<p>
+  The REPL's top level (and every <code>main</code>) is implicitly foul, so a
+  quick experiment like this just runs. In a real program you'd tuck the IO into
+  a small <code>foul</code> function at the edge, and keep everything else pure.
+</p>
+
+<p>
+  Effects run both ways, reading counts too. Click paste and answer the prompt:
+</p>
+
+<Code code={`IO.getLine()`} repl />

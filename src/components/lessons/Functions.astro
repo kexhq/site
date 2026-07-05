@@ -1,0 +1,66 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Functions</h1>
+
+<p>
+  Functions are also defined with <code>let</code> similarly to value bindings, but
+  they can also take arguments and have function bodies, which can contain multiple
+  expressions:
+</p>
+
+<Code code={`let double(n) = n * 2`} repl />
+
+<p>
+  To call them you can use the standard <code>f(x)</code> syntax, or the dot form
+  <code>x.f()</code>
+</p>
+
+<Code code={`double(21)`} repl />
+
+<Code code={`21.double`} repl />
+
+Bigger functions usually consist of multiple expressions, where the last one is
+the return value:
+<Code
+  code={`let fact(n: Integer) do 
+  return 1 if n <= 1
+
+  n * fact(n - 1)
+end
+
+fact(4)`}
+  repl
+/>
+<p>
+  You can create functions, without naming them, these are called <em
+    >lambdas</em
+  >. These are very useful; for example, you can pass these as parameters to
+  other functions, as: <code>{"{ |args| body }"}</code>:
+</p>
+
+<Code code={`[1, 2, 3].map { |n| n * 2 }`} repl />
+
+<p>
+  The above goes through the list and applies the lambda to each element,
+  returning a new list, doubling each element. The original list is unchanged,
+  as kex is immutable by default.
+</p>
+
+<Code code={`[1, 2, 3].filter { |n| n > 1 }`} repl />
+
+<p>
+  This one on the other hand uses <code>filter</code>
+  which keeps the ones for which the <em>lambda</em> returns true. Notice there are
+  no loops here, you describe
+  <em>what</em> to compute, and the list handles the iteration.
+</p>
+
+<p>
+  When a lambda just calls one method on its argument, there's a shorthand:
+  <code>&amp;.method</code> stands in for <code>{"{ |x| x.method }"}</code>.
+  It's common enough that you'll see it in almost every chain.
+</p>
+
+<Code code={`[1, 2, 3].map(&.to(String))`} repl />

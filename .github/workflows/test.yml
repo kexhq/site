@@ -1,0 +1,41 @@
+# Run the Playwright test suite against the built site
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+        env:
+          # @kexhq/kex is published from the kexhq/kex repo. Same org, so
+          # GITHUB_TOKEN can read it once that package's "Manage Actions
+          # access" settings grant this repo (kexhq/site) the Read role —
+          # see README for the exact steps. No PAT/secret needed.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Playwright browsers
+        run: npm run test:install
+      - name: Run tests
+        run: npm test
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

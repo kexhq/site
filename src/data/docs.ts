@@ -21,7 +21,7 @@ export const DOCS_NAV: DocSection[] = [
     entries: [
       { title: "Syntax", slug: "syntax", blurb: "Structure of a kex program." },
       { title: "Types", slug: "types", blurb: "Records, sum types, Optional, Result." },
-      { title: "Functions", slug: "functions", blurb: "Lambdas, multi-clause, UFCS." },
+      { title: "Functions", slug: "functions", blurb: "Lambdas, multi-clause, chaining." },
       { title: "Pattern matching", slug: "pattern-matching", blurb: "match, destructuring, guards." },
       { title: "Effects & purity", slug: "effects", blurb: "foul, ?, and the effect boundary." },
       { title: "Traits", slug: "traits", blurb: "Contracts with defaults." },

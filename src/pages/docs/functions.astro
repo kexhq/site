@@ -6,13 +6,13 @@ import Code from "~/components/Code.astro";
 <DocsLayout
   title="Functions"
   current="functions"
-  description="Functions, lambdas, UFCS, and currying in kex."
+  description="Functions, lambdas, chaining, and currying in kex."
 >
   <h1>Functions</h1>
 
   <p>
     Functions are the backbone of kex. They can be single expressions or
-    <code>do … end</code> blocks, and they compose through Uniform Function Call Syntax.
+    <code>do … end</code> blocks, and they compose through function chaining.
   </p>
 
   <h2>Signatures</h2>
@@ -28,11 +28,11 @@ let factorial(n: Integer) = n * factorial(n - 1)`}
     source="examples/fns.kex"
   />
 
-  <h2>Uniform Function Call Syntax</h2>
+  <h2>Function chaining</h2>
   <p>
     <code>value.f(arg)</code> is equivalent to <code>f(value, arg)</code>. The
     receiver type decides which overload resolves. This is what makes fluent
-    pipelines possible without methods living on the data.
+    chains possible without methods living on the data.
   </p>
   <Code
     code={`requests

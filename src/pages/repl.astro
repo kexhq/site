@@ -1,0 +1,324 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { TUTORIAL_NAV } from "~/data/tutorial";
+import HelloKex from "~/components/lessons/HelloKex.astro";
+import Variables from "~/components/lessons/Variables.astro";
+import Functions from "~/components/lessons/Functions.astro";
+import PatternMatching from "~/components/lessons/PatternMatching.astro";
+import Records from "~/components/lessons/Records.astro";
+import Make from "~/components/lessons/Make.astro";
+import Chaining from "~/components/lessons/Chaining.astro";
+import Effects from "~/components/lessons/Effects.astro";
+import SmallProject from "~/components/lessons/SmallProject.astro";
+
+const LESSON_COMPONENTS: Record<string, any> = {
+  "hello-kex": HelloKex,
+  variables: Variables,
+  functions: Functions,
+  "pattern-matching": PatternMatching,
+  records: Records,
+  make: Make,
+  chaining: Chaining,
+  effects: Effects,
+  "small-project": SmallProject,
+};
+
+// Flat, ordered lesson list (drives Prev/Next and the panel order).
+const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
+---
+
+<BaseLayout
+  title="REPL — kex"
+  description="A live, in-browser kex REPL — the same tree-walk interpreter as the CLI, compiled to WebAssembly. Follow the tutorial alongside it, or just start typing."
+>
+  <section class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]">
+    <div class="container-page py-12">
+      <div class="flex items-center gap-2 font-mono text-[12px] text-[var(--color-muted)]">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]"></span>
+        </span>
+        in-browser interpreter · wasm
+      </div>
+      <h1 class="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]">
+        REPL
+      </h1>
+      <p class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]">
+        The full kex interpreter in your browser — follow the tutorial on the right, or just start typing.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+      <!-- LEFT: the live REPL terminal -->
+      <div>
+        <div
+          class="surface-code overflow-hidden rounded-2xl border border-[var(--color-code-border)] shadow-[0_18px_40px_-24px_rgba(13,12,40,0.45)]"
+        >
+          <div class="flex items-center gap-2 border-b border-[var(--color-code-border)] px-4 py-2.5">
+            <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-[#febc2e]"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-[#28c840]"></span>
+            <span class="ml-2 font-mono text-[12px] text-[#8a8aa0]">kex repl — wasm</span>
+            <span
+              id="repl-status"
+              class="ml-auto rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10.5px] text-[#6b6b80]"
+            >
+              loading…
+            </span>
+          </div>
+          <div id="repl-terminal" class="h-[520px] px-2 py-2"></div>
+        </div>
+        <p class="mt-3 text-center text-[13px] text-[var(--color-faint)]">
+          Try <code class="font-mono">1 + 2</code>, a multi-line
+          <code class="font-mono">do … end</code> block, or Tab-completion.
+        </p>
+      </div>
+
+      <!-- RIGHT: the tutorial, one lesson at a time -->
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <div class="rounded-2xl border border-[var(--color-line)] p-5">
+          <div class="flex items-center justify-between">
+            <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">
+              Tutorial
+            </p>
+            <span
+              data-progress
+              class="font-mono text-[11px] tabular-nums text-[var(--color-faint)]"
+            >
+              1 / {lessons.length}
+            </span>
+          </div>
+
+          <details class="lesson-toc mt-3">
+            <summary>Contents</summary>
+            <nav class="mt-2 flex flex-col gap-3">
+              {
+                TUTORIAL_NAV.map((section) => (
+                  <div>
+                    <p class="lesson-toc-heading">{section.heading}</p>
+                    <ul class="mt-1 flex flex-col">
+                      {section.entries.map((entry) => (
+                        <li>
+                          <a href={`#${entry.slug}`} data-lesson-link={entry.slug}>
+                            {entry.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              }
+            </nav>
+          </details>
+
+          <div class="mt-4">
+            {
+              lessons.map((lesson, i) => {
+                const Lesson = LESSON_COMPONENTS[lesson.slug];
+                return (
+                  <div class="prose-compact" data-lesson-panel={lesson.slug} hidden={i !== 0}>
+                    <Lesson />
+                  </div>
+                );
+              })
+            }
+          </div>
+
+          <div class="mt-6 flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4">
+            <button
+              type="button"
+              data-prev
+              class="lesson-nav-btn inline-flex items-center gap-1.5"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+              Prev
+            </button>
+            <button
+              type="button"
+              data-next
+              class="lesson-nav-btn inline-flex items-center gap-1.5"
+            >
+              Next
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Compact prose for the narrow tutorial column. */
+  .prose-compact :global(h1) {
+    color: var(--color-ink);
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .prose-compact :global(p) {
+    color: var(--color-ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0 0 0.85rem;
+  }
+  .prose-compact :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .prose-compact :global(a) {
+    color: var(--color-accent-strong);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent-soft);
+    text-underline-offset: 3px;
+  }
+  .prose-compact :global(a:hover) {
+    text-decoration-color: currentColor;
+  }
+  /* inline code only — not the <pre><code> inside a Code block */
+  .prose-compact :global(:not(pre) > code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.82em;
+    background: var(--color-bg-muted);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+  }
+
+  .lesson-toc summary {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-accent-strong);
+    cursor: pointer;
+    list-style: none;
+  }
+  .lesson-toc summary::-webkit-details-marker {
+    display: none;
+  }
+  .lesson-toc summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 0.4em;
+    transition: transform 0.15s;
+  }
+  .lesson-toc[open] summary::before {
+    transform: rotate(90deg);
+  }
+  .lesson-toc-heading {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-faint);
+  }
+  .lesson-toc a {
+    display: block;
+    padding: 0.2rem 0;
+    font-size: 13px;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+  .lesson-toc a:hover {
+    color: var(--color-accent-strong);
+  }
+  .lesson-toc a[data-active] {
+    color: var(--color-accent-strong);
+    font-weight: 600;
+  }
+
+  .lesson-nav-btn {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    background: none;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .lesson-nav-btn:hover:not(:disabled) {
+    border-color: var(--color-line-strong);
+    background: var(--color-bg-subtle);
+    color: var(--color-ink);
+  }
+  .lesson-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+</style>
+
+<script>
+  import { mountRepl, type ReplHandle } from "~/lib/repl";
+
+  const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-lesson-panel]"));
+  const progressEl = document.querySelector<HTMLElement>("[data-progress]");
+  const prevBtn = document.querySelector<HTMLButtonElement>("[data-prev]");
+  const nextBtn = document.querySelector<HTMLButtonElement>("[data-next]");
+  const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]"));
+  const tocDetails = document.querySelector<HTMLDetailsElement>(".lesson-toc");
+  const slugs = panels.map((p) => p.dataset.lessonPanel!);
+
+  let index = 0;
+
+  // Deep link so a lesson can be bookmarked/shared: /repl#<slug>. Falls back
+  // to the first lesson for an unknown or missing hash.
+  function indexFromHash(): number {
+    const slug = location.hash.slice(1);
+    const i = slugs.indexOf(slug);
+    return i === -1 ? 0 : i;
+  }
+
+  function showLesson(i: number, { updateHash = true } = {}) {
+    index = Math.max(0, Math.min(panels.length - 1, i));
+    const slug = slugs[index];
+    panels.forEach((panel, n) => {
+      panel.hidden = n !== index;
+    });
+    if (progressEl) progressEl.textContent = `${index + 1} / ${panels.length}`;
+    if (prevBtn) prevBtn.disabled = index === 0;
+    if (nextBtn) nextBtn.disabled = index === panels.length - 1;
+    tocLinks.forEach((link) => {
+      link.toggleAttribute("data-active", link.dataset.lessonLink === slug);
+    });
+    if (updateHash && location.hash.slice(1) !== slug) {
+      history.replaceState(null, "", `#${slug}`);
+    }
+  }
+
+  prevBtn?.addEventListener("click", () => showLesson(index - 1));
+  nextBtn?.addEventListener("click", () => showLesson(index + 1));
+  tocLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      showLesson(slugs.indexOf(link.dataset.lessonLink!));
+      if (tocDetails) tocDetails.open = false;
+    });
+  });
+  window.addEventListener("hashchange", () => showLesson(indexFromHash()));
+  showLesson(indexFromHash());
+
+  const container = document.getElementById("repl-terminal");
+  const statusEl = document.getElementById("repl-status");
+
+  if (container) {
+    let handle: ReplHandle | undefined;
+
+    mountRepl(container, (status) => {
+      if (!statusEl) return;
+      if (status === "ready") statusEl.textContent = "ready";
+      else if (status === "error") statusEl.textContent = "failed to load — reload to retry";
+      else statusEl.textContent = "loading…";
+    }).then((h) => {
+      handle = h;
+    });
+
+    document.addEventListener("kex-repl:paste", ((e: CustomEvent<{ code: string }>) => {
+      handle?.pasteText(e.detail.code);
+    }) as EventListener);
+  }
+</script>

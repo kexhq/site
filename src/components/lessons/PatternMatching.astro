@@ -1,0 +1,91 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Pattern matching</h1>
+
+<p>
+  Pattern matching is one way of how <em>Kex</em> can branch. A <code
+    >match</code
+  > expression lists
+  <em>arms</em>, a shape on the left, its result on the right. The first arm
+  whose shape fits is the one that runs.
+</p>
+
+<Code
+  code={`match 2 do
+  1 -> "one"
+  2 -> "two"
+  _ -> "many"
+end`}
+  repl
+/>
+
+<p>
+  <code>_</code> is the wildcard: it matches anything, so it works as a catch-all.
+  Arms are tried top to bottom, so put specific cases before general ones.
+</p>
+
+<p>
+  Patterns do more than compare values, they <strong>destructure</strong>
+  them. Here a tuple is unpacked into <code>a</code> and <code>b</code> in a single
+  step, no indexing or temporary variables.
+</p>
+
+<Code
+  code={`match (3, 4) do
+  (a, b) -> a + b
+end`}
+  repl
+/>
+
+<p>
+  This is also the honest way to handle an Optional: instead of papering over
+  the missing case with a single default, you spell out both.
+</p>
+
+<Code
+  code={`match Just(5) do
+  Just(x) -> x
+  None -> 0
+end`}
+  repl
+/>
+
+<Code
+  code={`match None do
+  Just(x) -> x
+  None -> 0
+end`}
+  repl
+/>
+
+<p>
+  Pattern matching aren't limited to <code>match</code>. A function can be
+  defined in multiple
+  <strong>clauses</strong>, each matching a different shape of argument. Clauses
+  are tried top to bottom, same as match arms:
+</p>
+
+<Code
+  code={`factorial : Integer -> Integer
+let factorial(0) = 1
+let factorial(n) = n * factorial(n - 1)
+
+factorial(5)`}
+  repl
+/>
+
+<p>
+  A trailing <code>when</code> narrows a clause with an extra condition — the arm
+  only fires if the guard holds too:
+</p>
+
+<Code
+  code={`match 7 do
+  x when x < 0 -> "negative"
+  0 -> "zero"
+  _ -> "positive"
+end`}
+  repl
+/>

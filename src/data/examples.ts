@@ -72,7 +72,7 @@ None
   },
   {
     slug: "vectors",
-    title: "Records, operators, UFCS",
+    title: "Records, operators, chaining",
     tagline:
       "Define a record, attach behavior with `make`, overload `+` and `*`, and chain calls.",
     category: "Types",

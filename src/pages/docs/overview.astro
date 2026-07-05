@@ -8,7 +8,7 @@ import Code from "~/components/Code.astro";
 
   <p>
     Kex is a small <strong>functional programming language</strong> with
-    Ruby-like syntax, immutable data by default, Uniform Function Call Syntax,
+    Ruby-like syntax, immutable data by default, function chaining,
     type-directed <code>make</code> blocks, pattern matching, and explicit
     side-effect boundaries.
   </p>
@@ -31,7 +31,7 @@ end`} output="Hello, world!" file="hello.kex" source="examples/hello.kex" />
 
   <h2>Design principles</h2>
   <ul>
-    <li><strong>Pipelines over methods.</strong> <code>value.f(arg)</code> is exactly <code>f(value, arg)</code>. Plain functions compose into fluent chains.</li>
+    <li><strong>Function chaining over methods.</strong> <code>value.f(arg)</code> is exactly <code>f(value, arg)</code>. Plain functions compose into fluent chains.</li>
     <li><strong>Behavior near its type.</strong> <code>make</code> attaches functions, operators, and methods to a type — without classes or inheritance.</li>
     <li><strong>Effects you can see.</strong> Pure by default; <code>foul</code> marks effectful code, and pure code can’t call it.</li>
     <li><strong>Failure as a value.</strong> <code>Result</code> and <code>Optional</code> carry errors; <code>?</code> propagates them.</li>

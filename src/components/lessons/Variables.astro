@@ -1,0 +1,51 @@
+---
+import Code from "~/components/Code.astro";
+---
+
+<h1>Variables &amp; types</h1>
+
+<p>
+  Values are bound via <code>let</code>. Kex infers the type and the REPL prints
+  it after the colon, <code>name</code> is a <code>String</code>,
+  <code>count</code> an <code>Int</code>, with no annotations needed.
+</p>
+
+<Code code={`let name = "kex"`} repl />
+
+<Code code={`let count = 42`} repl />
+
+<p>
+  A <code>let</code> can't be reassigned. When you need something that changes, reach
+  for <code>var</code> instead and then you can give it a new value:
+</p>
+
+<Code
+  code={`var n = 5
+n = n + 1
+n`}
+  repl
+/>
+
+<p>
+  There's no <code>null</code> in kex. A value that might be missing is an
+  <strong>Optional&lt;T&gt;</strong> which is usually shortened to <strong
+    ><code>T?</code></strong
+  >. It can either be <code>Just(value)</code> or <code>None</code>. The
+  function <code>.or(default)</code>
+  unwraps it, falling back when it's empty.
+</p>
+
+<Code code={`Just(5).or(0)`} repl />
+
+<Code code={`None.or(0)`} repl />
+
+<p>
+  One more everyday type: <code>1..10</code> is a <strong>range</strong> (<strong
+    ><code>Range&lt;Int&gt;</code></strong
+  > in this example), every integer from 1 to 10 without allocating a list up front.
+  Turn it into one with <code>.to(List)</code>, or work with it lazily using the
+  same
+  <code>map</code>/<code>filter</code>/<code>sum</code> methods you'll meet next.
+</p>
+
+<Code code={`(1..5).to(List)`} repl />
