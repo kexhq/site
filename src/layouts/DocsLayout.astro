@@ -16,7 +16,7 @@ const prev = idx > 0 ? DOC_ORDER[idx - 1] : null;
 const next = idx >= 0 && idx < DOC_ORDER.length - 1 ? DOC_ORDER[idx + 1] : null;
 ---
 
-<BaseLayout title={`${title} — kex docs`} description={description}>
+<BaseLayout title={`${title} | Documentation | Kex`} description={description}>
   <div class="container-page py-10">
     <div class="grid gap-12 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-16">
       <!-- sidebar -->
@@ -30,7 +30,9 @@ const next = idx >= 0 && idx < DOC_ORDER.length - 1 ? DOC_ORDER[idx + 1] : null;
                 </p>
                 <ul class="space-y-0.5">
                   {section.entries.map((e: DocEntry) => {
-                    const href = e.slug.startsWith("../") ? `/${e.slug.replace("../", "")}` : `/docs/${e.slug}`;
+                    const href = e.slug.startsWith("../")
+                      ? `/${e.slug.replace("../", "")}`
+                      : `/docs/${e.slug}`;
                     const active = href === currentPath;
                     return (
                       <li>
@@ -57,8 +59,12 @@ const next = idx >= 0 && idx < DOC_ORDER.length - 1 ? DOC_ORDER[idx + 1] : null;
 
       <!-- content -->
       <div class="min-w-0 max-w-3xl">
-        <div class="mb-4 flex items-center gap-2 font-mono text-[12px] text-[var(--color-faint)]">
-          <a href="/docs" class="hover:text-[var(--color-accent-strong)]">Docs</a>
+        <div
+          class="mb-4 flex items-center gap-2 font-mono text-[12px] text-[var(--color-faint)]"
+        >
+          <a href="/docs" class="hover:text-[var(--color-accent-strong)]"
+            >Docs</a
+          >
           <span>/</span>
           <span class="text-[var(--color-muted)]">{title}</span>
         </div>
@@ -71,17 +77,35 @@ const next = idx >= 0 && idx < DOC_ORDER.length - 1 ? DOC_ORDER[idx + 1] : null;
           (prev || next) && (
             <nav class="mt-16 grid gap-4 border-t border-[var(--color-line)] pt-6 sm:grid-cols-2">
               {prev ? (
-                <a href={`/docs/${prev.slug}`} class="group rounded-xl border border-[var(--color-line)] p-4 transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]">
-                  <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">← Previous</div>
-                  <div class="mt-1 font-medium text-[var(--color-ink)] group-hover:text-[var(--color-accent-strong)]">{prev.title}</div>
+                <a
+                  href={`/docs/${prev.slug}`}
+                  class="group rounded-xl border border-[var(--color-line)] p-4 transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+                >
+                  <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">
+                    ← Previous
+                  </div>
+                  <div class="mt-1 font-medium text-[var(--color-ink)] group-hover:text-[var(--color-accent-strong)]">
+                    {prev.title}
+                  </div>
                 </a>
-              ) : <span />}
+              ) : (
+                <span />
+              )}
               {next ? (
-                <a href={`/docs/${next.slug}`} class="group rounded-xl border border-[var(--color-line)] p-4 text-right transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)] sm:col-start-2">
-                  <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">Next →</div>
-                  <div class="mt-1 font-medium text-[var(--color-ink)] group-hover:text-[var(--color-accent-strong)]">{next.title}</div>
+                <a
+                  href={`/docs/${next.slug}`}
+                  class="group rounded-xl border border-[var(--color-line)] p-4 text-right transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)] sm:col-start-2"
+                >
+                  <div class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">
+                    Next →
+                  </div>
+                  <div class="mt-1 font-medium text-[var(--color-ink)] group-hover:text-[var(--color-accent-strong)]">
+                    {next.title}
+                  </div>
                 </a>
-              ) : <span />}
+              ) : (
+                <span />
+              )}
             </nav>
           )
         }

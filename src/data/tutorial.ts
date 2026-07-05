@@ -26,7 +26,7 @@ export const TUTORIAL_NAV: TutorialSection[] = [
       { title: "Records & Result", slug: "records", blurb: "Modeling data: records, unions, fallible functions.", status: "ready" },
       { title: "Attaching behavior with make", slug: "make", blurb: "make, operators, no classes.", status: "ready" },
       { title: "Function chaining", slug: "chaining", blurb: "Chaining functions like methods.", status: "ready" },
-      { title: "Effects & purity", slug: "effects", blurb: "foul, ?, and what stays pure.", status: "ready" },
+      { title: "Purity", slug: "purity", blurb: "foul, ?, and what stays pure.", status: "ready" },
     ],
   },
   {

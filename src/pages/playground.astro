@@ -1,0 +1,1027 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { EXAMPLES } from "~/data/examples";
+
+const categories = ["Basics", "Types", "Control", "Effects", "DSL"] as const;
+const grouped = categories
+  .map((c) => ({
+    category: c,
+    items: EXAMPLES.filter((e) => e.category === c),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+<BaseLayout
+  title="Playground | Kex"
+  description="Write, run, and share Kex programs in the browser — a Monaco editor backed by the real wasm interpreter. Examples, run output, and shareable links."
+>
+  <section
+    class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]"
+  >
+    <div class="container-page py-12">
+      <div
+        class="flex items-center gap-2 font-mono text-[12px] text-[var(--color-muted)]"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50"
+          ></span>
+          <span
+            class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]"
+          ></span>
+        </span>
+        Interpreted · WebAssembly
+      </div>
+      <h1
+        class="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]"
+      >
+        Playground
+      </h1>
+      <p
+        class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]"
+      >
+        Write, run and share Kex programs, on the real interpreter
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-8">
+    <!-- Toolbar -->
+    <div
+      class="flex flex-wrap items-center gap-2 border border-[var(--color-line)] bg-[var(--color-bg)] rounded-t-2xl border-b-0 px-3 py-2.5"
+    >
+      <label class="relative inline-flex items-center">
+        <span class="sr-only">Open an example</span>
+        <select
+          id="pg-examples"
+          class="appearance-none rounded-lg border border-[var(--color-line)] bg-[var(--color-bg)] py-1.5 pl-3 pr-8 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] focus:border-[var(--color-accent)] focus:outline-none"
+          aria-label="Open an example"
+        >
+          <option value="">Open example…</option>
+          {
+            grouped.map((g) => (
+              <optgroup label={g.category}>
+                {g.items.map((ex) => (
+                  <option value={ex.slug}>{ex.title}</option>
+                ))}
+              </optgroup>
+            ))
+          }
+        </select>
+        <svg
+          class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-faint)]"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg
+        >
+      </label>
+
+      <div class="mx-1 h-5 w-px bg-[var(--color-line)]"></div>
+
+      <button
+        type="button"
+        id="pg-run"
+        class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-ink)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-bg)] transition-colors hover:bg-[var(--color-ink-soft)]"
+      >
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg
+        >
+        Run
+        <span
+          class="ml-1 hidden rounded bg-white/15 px-1 py-0.5 text-[10px] font-normal sm:inline"
+          >⌘↵</span
+        >
+      </button>
+
+      <button
+        type="button"
+        id="pg-share"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"
+          ></circle><circle cx="18" cy="19" r="3"></circle><path
+            d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg
+        >
+        <span data-share-label>Share</span>
+      </button>
+
+      <button
+        type="button"
+        id="pg-save"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+        title="Save the current buffer as a new program"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><path
+            d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+          ></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline
+            points="7 3 7 8 15 8"></polyline></svg
+        >
+        <span data-save-label>Save as new</span>
+      </button>
+
+      <button
+        type="button"
+        id="pg-clear"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><path
+            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+          ></path></svg
+        >
+        Clear
+      </button>
+
+      <!-- Layout toggle: stacked (editor on top, output below) vs side-by-side.
+           Persisted in localStorage so the user's preference sticks. -->
+      <div
+        class="flex items-center overflow-hidden rounded-lg border border-[var(--color-line)]"
+        role="group"
+        aria-label="Editor layout"
+      >
+        <button
+          type="button"
+          data-layout-btn="stacked"
+          aria-pressed="true"
+          class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
+          title="Stacked — output below editor"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            ><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line
+              x1="3"
+              y1="12"
+              x2="21"
+              y2="12"></line></svg
+          >
+        </button>
+        <button
+          type="button"
+          data-layout-btn="side"
+          aria-pressed="false"
+          class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
+          title="Side-by-side — output next to editor"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            ><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line
+              x1="12"
+              y1="4"
+              x2="12"
+              y2="20"></line></svg
+          >
+        </button>
+      </div>
+
+      <span
+        id="pg-status"
+        class="ml-auto rounded-full bg-[var(--color-bg-muted)] px-2 py-0.5 font-mono text-[10.5px] text-[var(--color-faint)]"
+        >loading…</span
+      >
+    </div>
+
+    <!-- Tab bar — one tab per saved program (persisted) plus any transient
+         tabs (unsaved: examples, shared links, fresh + tabs). Renders
+         client-side from the in-memory `tabs` array. -->
+    <div
+      id="pg-tabs"
+      class="flex items-stretch gap-1 border border-[var(--color-line)] border-b-0 bg-[var(--color-bg)] px-2 pt-1.5 overflow-x-auto"
+      role="tablist"
+      aria-label="Programs"
+    >
+      <button
+        type="button"
+        id="pg-new-tab"
+        class="pg-tab-new shrink-0 self-center rounded-md border border-dashed border-[var(--color-line-strong)] px-2.5 py-1 font-mono text-[13px] leading-none text-[var(--color-faint)] transition-colors hover:border-solid hover:text-[var(--color-ink-soft)]"
+        title="New program"
+        aria-label="New program">+</button
+      >
+    </div>
+
+    <!-- Editor + Output -->
+    <div
+      id="pg-split"
+      data-layout="stacked"
+      class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] border-t-0"
+    >
+      <div id="pg-editor-pane" class="surface-code relative min-h-[420px]">
+        <div id="pg-editor" class="h-[560px]"></div>
+      </div>
+
+      <div
+        id="pg-output-pane"
+        class="surface-code relative min-h-[300px] flex flex-col"
+      >
+        <div
+          class="flex items-center justify-between border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
+        >
+          <span>output</span>
+          <span data-run-indicator class="hidden text-[#f0c987]">running…</span>
+        </div>
+        <pre
+          id="pg-output"
+          data-state="idle"
+          class="scroll-slim m-0 flex-1 overflow-auto px-4 py-4 font-mono text-[13px] leading-[1.6] text-[#c9e0a0]"><code>(idle — press Run)</code></pre>
+      </div>
+    </div>
+
+    <p class="mt-3 text-center text-[13px] text-[var(--color-faint)]">
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >⌘</kbd
+      >
+      /
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >Ctrl</kbd
+      >
+      +
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >Enter</kbd
+      >
+      to run · saved tabs persist · Share copies a link.
+    </p>
+  </section>
+</BaseLayout>
+
+<style is:global>
+  #pg-output[data-state="error"] {
+    color: #e0a0a0;
+  }
+  #pg-output[data-state="idle"] {
+    color: #6b6b80;
+    font-style: italic;
+  }
+  /* Layout: default is stacked (editor on top, output below).
+     `data-layout="side"` puts them side-by-side on large screens; mobile
+     always stacks since there's no room for two columns. */
+  #pg-split {
+    grid-template-columns: 1fr;
+  }
+  #pg-editor-pane {
+    border-bottom: 1px solid var(--color-code-border);
+  }
+  @media (min-width: 1024px) {
+    #pg-split[data-layout="side"] {
+      grid-template-columns: 1fr 1fr;
+    }
+    #pg-split[data-layout="side"] #pg-editor-pane {
+      border-bottom: 0;
+      border-right: 1px solid var(--color-code-border);
+    }
+  }
+
+  /* Tab styling. Tabs sit on the toolbar's bottom edge and visually connect
+     to the active editor pane (active tab's bottom border disappears into
+     the editor below). */
+  .pg-tab {
+    position: relative;
+    top: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px 5px 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 6px 6px 0 0;
+    background: var(--color-bg-subtle);
+    color: var(--color-ink-soft);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    max-width: 220px;
+    flex-shrink: 0;
+  }
+  .pg-tab:hover {
+    background: var(--color-bg-muted);
+  }
+  .pg-tab[aria-selected="true"] {
+    background: var(--color-code-bg);
+    color: #e9e0cf;
+    border-color: var(--color-code-border);
+    z-index: 1;
+  }
+  /* Transient marker: a small dot before the name so unsaved tabs are
+     distinguishable at a glance. Active transient gets the accent color. */
+  .pg-tab[data-transient="true"]::before {
+    content: "●";
+    color: var(--color-faint);
+    font-size: 8px;
+    line-height: 1;
+  }
+  .pg-tab[data-transient="true"][aria-selected="true"]::before {
+    color: #f0c987;
+  }
+  .pg-tab[data-transient="true"] .pg-tab-name {
+    font-style: italic;
+  }
+
+  .pg-tab-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    display: inline-block;
+  }
+  .pg-tab-name[contenteditable="true"] {
+    /* Inline rename mode. Outline replaces the text-overflow ellipsis clip
+       so the full text is editable. */
+    outline: 1px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+    padding: 0 2px;
+    max-width: none;
+  }
+
+  .pg-tab-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 0;
+    background: none;
+    color: inherit;
+    opacity: 0.45;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+  }
+  .pg-tab-close:hover {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  import {
+    mountPlayground,
+    STARTER_CODE,
+    type PlaygroundHandle,
+  } from "~/lib/playground";
+  import {
+    loadStore,
+    createProgram,
+    touchProgram,
+    renameProgram,
+    deleteProgram,
+    setActive,
+    type SavedProgram,
+  } from "~/lib/playground-store";
+  import { encodeCodeHash, readCodeFromHash, replaceHash } from "~/lib/share";
+  import { EXAMPLES, exampleFilename } from "~/data/examples";
+
+  // ---------------------------------------------------------------------------
+  // Element handles
+  // ---------------------------------------------------------------------------
+  const editorEl = document.getElementById("pg-editor") as HTMLElement;
+  const outputEl = document.getElementById("pg-output") as HTMLElement;
+  const statusEl = document.getElementById("pg-status") as HTMLElement;
+  const runBtn = document.getElementById("pg-run") as HTMLButtonElement;
+  const shareBtn = document.getElementById("pg-share") as HTMLButtonElement;
+  const saveBtn = document.getElementById("pg-save") as HTMLButtonElement;
+  const clearBtn = document.getElementById("pg-clear") as HTMLButtonElement;
+  const examplesSelect = document.getElementById(
+    "pg-examples",
+  ) as HTMLSelectElement;
+  const runIndicator = document.querySelector<HTMLElement>(
+    "[data-run-indicator]",
+  );
+  const shareLabel = shareBtn.querySelector("[data-share-label]");
+  const splitEl = document.getElementById("pg-split") as HTMLElement;
+  const layoutBtns = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-layout-btn]"),
+  );
+  const tabBarEl = document.getElementById("pg-tabs") as HTMLElement;
+  const newTabBtn = document.getElementById("pg-new-tab") as HTMLButtonElement;
+
+  // ---------------------------------------------------------------------------
+  // Tab state — the in-memory source of truth for what's open.
+  //
+  // Saved tabs (id = the store program id) and transient tabs (id starts with
+  // "transient:") share the same array so the tab bar ordering is preserved.
+  // Each tab caches its own editor buffer and last-run output so switching is
+  // instant and per-tab output works (per the locked-in design).
+  // ---------------------------------------------------------------------------
+  interface Tab {
+    id: string; // store id, or `transient:N` for unsaved tabs
+    name: string;
+    isTransient: boolean;
+    code: string; // snapshot swapped in/out on tab switch
+    output: { text: string; state: string };
+  }
+  let tabs: Tab[] = [];
+  let activeTabId: string | null = null;
+  let transientCounter = 0;
+  let handle: PlaygroundHandle | undefined;
+
+  const newTransientId = () => `transient:${++transientCounter}`;
+
+  function activeTab(): Tab | undefined {
+    return tabs.find((t) => t.id === activeTabId);
+  }
+
+  /** Picks the next "Untitled" / "Untitled N" name based on existing tabs. */
+  function nextUntitledName(): string {
+    const matching = tabs.filter((t) => /^Untitled(\s\d+)?$/.test(t.name));
+    if (matching.length === 0) return "Untitled";
+    return `Untitled ${matching.length + 1}`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Layout toggle (unchanged from before)
+  // ---------------------------------------------------------------------------
+  const LAYOUT_KEY = "kex-playground-layout";
+  type Layout = "stacked" | "side";
+  function loadLayoutPref(): Layout {
+    try {
+      return localStorage.getItem(LAYOUT_KEY) === "side" ? "side" : "stacked";
+    } catch {
+      return "stacked";
+    }
+  }
+  function saveLayoutPref(layout: Layout) {
+    try {
+      localStorage.setItem(LAYOUT_KEY, layout);
+    } catch {
+      // localStorage unavailable — non-fatal.
+    }
+  }
+  function applyLayout(layout: Layout) {
+    splitEl.dataset.layout = layout;
+    layoutBtns.forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.layoutBtn === layout)),
+    );
+  }
+  layoutBtns.forEach((b) =>
+    b.addEventListener("click", () => {
+      const next = b.dataset.layoutBtn as Layout;
+      applyLayout(next);
+      saveLayoutPref(next);
+    }),
+  );
+  applyLayout(loadLayoutPref());
+
+  // ---------------------------------------------------------------------------
+  // Tab bar rendering
+  // ---------------------------------------------------------------------------
+  function renderTabs() {
+    // Preserve the "+" button — wipe everything else.
+    const existing = Array.from(tabBarEl.querySelectorAll(".pg-tab"));
+    for (const el of existing) el.remove();
+
+    for (const tab of tabs) {
+      const li = document.createElement("button");
+      li.type = "button";
+      li.role = "tab";
+      li.dataset.tabId = tab.id;
+      li.dataset.transient = String(tab.isTransient);
+      li.setAttribute("aria-selected", String(tab.id === activeTabId));
+      li.className = "pg-tab pg-tab-btn shrink-0";
+      li.title = tab.isTransient ? `${tab.name} (unsaved)` : tab.name;
+
+      const name = document.createElement("span");
+      name.className = "pg-tab-name";
+      name.textContent = tab.name;
+      li.appendChild(name);
+
+      const close = document.createElement("button");
+      close.type = "button";
+      close.className = "pg-tab-close";
+      close.dataset.closeId = tab.id;
+      close.setAttribute("aria-label", `Close ${tab.name}`);
+      close.textContent = "×";
+      li.appendChild(close);
+
+      tabBarEl.insertBefore(li, newTabBtn);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tab switching
+  //
+  // Snapshot the outgoing tab's editor buffer + output, then load the
+  // incoming tab's snapshot. The setValue uses `silent: true` so the edit
+  // event doesn't fire — we don't want a switch to itself trigger a save or
+  // URL update.
+  // ---------------------------------------------------------------------------
+  function snapshotActive() {
+    const t = activeTab();
+    if (!t || !handle) return;
+    t.code = handle.getValue();
+    t.output = {
+      text: outputEl.textContent ?? "",
+      state: outputEl.dataset.state ?? "idle",
+    };
+  }
+
+  function switchToTab(id: string) {
+    if (id === activeTabId) return;
+    snapshotActive();
+    const next = tabs.find((t) => t.id === id);
+    if (!next) return;
+
+    activeTabId = id;
+    // Refresh the editor + output panes from the tab's snapshot.
+    handle?.setValue(next.code, { silent: true });
+    outputEl.textContent = next.output.text;
+    outputEl.dataset.state = next.output.state;
+
+    // Mark active in the store for saved tabs; clear for transient.
+    setActive(next.isTransient ? null : next.id);
+
+    // Update the URL hash so the active tab is shareable. (We deliberately
+    // don't try to "remember" per-tab hashes — the URL reflects whatever's
+    // in the active editor, which is what a visitor would want to share.)
+    replaceHash(encodeCodeHash(next.code, next.name));
+
+    renderTabs();
+  }
+
+  // ---------------------------------------------------------------------------
+  // New tab — always creates a transient tab with the starter code.
+  // ---------------------------------------------------------------------------
+  function newTab(): string {
+    const id = newTransientId();
+    tabs = [
+      ...tabs,
+      {
+        id,
+        name: nextUntitledName(),
+        isTransient: true,
+        code: STARTER_CODE,
+        output: { text: "(idle — press Run)", state: "idle" },
+      },
+    ];
+    return id;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Close tab — confirms before discarding/deleting non-empty tabs.
+  // ---------------------------------------------------------------------------
+  function closeTab(id: string) {
+    const idx = tabs.findIndex((t) => t.id === id);
+    if (idx === -1) return;
+    const tab = tabs[idx]!;
+
+    // Saved tabs always prompt — the user explicitly saved them, so deletion
+    // is destructive. Transient tabs skip the prompt when the buffer is just
+    // the starter (a fresh "+" tab the user never touched) so closing a row
+    // of fresh tabs isn't a confirm-dialog gauntlet.
+    const code =
+      tab.id === activeTabId && handle ? handle.getValue() : tab.code;
+    const isPristineTransient =
+      tab.isTransient &&
+      (code.trim().length === 0 || code === STARTER_CODE);
+    if (!isPristineTransient) {
+      const verb = tab.isTransient ? "Discard" : "Delete";
+      const name = tab.name || "this program";
+      // window.confirm for v1 — simple, accessible enough, no custom UI to
+      // maintain. Can graduate to an inline confirm later.
+      if (!window.confirm(`${verb} "${name}"? This can't be undone.`)) {
+        return;
+      }
+    }
+
+    if (!tab.isTransient) {
+      deleteProgram(tab.id);
+    }
+    tabs = tabs.filter((t) => t.id !== id);
+
+    // Pick the next tab to activate. Prefer the right neighbor, fall back to
+    // the left, fall back to a fresh transient tab so the editor is never
+    // empty.
+    if (activeTabId === id) {
+      const nextTab = tabs[idx] ?? tabs[idx - 1];
+      if (nextTab) {
+        switchToTab(nextTab.id);
+      } else {
+        const fresh = newTab();
+        // switchToTab would try to snapshot the closed tab; do a clean
+        // activation instead.
+        activeTabId = fresh;
+        const freshTab = tabs.find((t) => t.id === fresh)!;
+        handle?.setValue(freshTab.code, { silent: true });
+        outputEl.textContent = freshTab.output.text;
+        outputEl.dataset.state = freshTab.output.state;
+        setActive(null);
+        replaceHash(encodeCodeHash(freshTab.code, freshTab.name));
+        renderTabs();
+      }
+    } else {
+      renderTabs();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Save as new — promotes the current buffer into a saved program slot,
+  // regardless of whether the current tab is transient (promote) or saved
+  // (duplicate / fork). The transient source tab is consumed on promote.
+  // ---------------------------------------------------------------------------
+  function saveAsNew() {
+    if (!handle) return;
+    const code = handle.getValue();
+    const source = activeTab();
+    const name = source
+      ? source.isTransient
+        ? source.name
+        : `${source.name} copy`
+      : nextUntitledName();
+    const { program } = createProgram(name, code);
+
+    // If the source was transient, drop it — the saved tab takes its place.
+    // If the source was saved, keep it (this was a fork).
+    if (source?.isTransient) {
+      tabs = tabs.filter((t) => t.id !== source.id);
+    }
+    tabs = [
+      ...tabs,
+      {
+        id: program.id,
+        name: program.name,
+        isTransient: false,
+        code: program.code,
+        output: source?.output ?? { text: "(idle — press Run)", state: "idle" },
+      },
+    ];
+
+    // Switch to the new saved tab.
+    snapshotActive(); // updates the (possibly removed) source — harmless
+    activeTabId = program.id;
+    setActive(program.id);
+    // The URL hash should reflect the new active tab — drop any stale
+    // transient name from a previous share click.
+    replaceHash(encodeCodeHash(program.code, program.name));
+    renderTabs();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rename — inline contenteditable on the active saved tab's name span.
+  // ---------------------------------------------------------------------------
+  function startRename(tabId: string) {
+    const tab = tabs.find((t) => t.id === tabId);
+    if (!tab) return;
+    // Saved tabs: rename persists via the store. Transient tabs: rename lives
+    // only in memory + the URL hash (which is what makes a tab name visible
+    // to anyone the user shares the link with before saving).
+    const nameSpan = tabBarEl.querySelector(
+      `.pg-tab[data-tab-id="${cssEscape(tabId)}"] .pg-tab-name`,
+    ) as HTMLElement | null;
+    if (!nameSpan) return;
+
+    const original = tab.name;
+    nameSpan.contentEditable = "true";
+    nameSpan.focus();
+    // Select all text so typing replaces the name.
+    const range = document.createRange();
+    range.selectNodeContents(nameSpan);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+
+    const commit = () => {
+      nameSpan.contentEditable = "false";
+      const next = (nameSpan.textContent ?? "").trim() || "Untitled";
+      nameSpan.textContent = next;
+      tab.name = next;
+      // Re-render to pick up the title attribute update + re-clamp.
+      renderTabs();
+      if (next !== original) {
+        // Only push to the store for saved tabs — transient renames live in
+        // memory only. Either way, refresh the URL hash so the address bar
+        // (and any freshly-copied share link) carries the new name.
+        if (!tab.isTransient) renameProgram(tab.id, next);
+        if (tab.id === activeTabId) {
+          refreshUrlForActive();
+        }
+      }
+      nameSpan.removeEventListener("blur", commit);
+      nameSpan.removeEventListener("keydown", onKey);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        nameSpan.blur();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        nameSpan.textContent = original;
+        nameSpan.blur();
+      }
+    };
+    nameSpan.addEventListener("blur", commit);
+    nameSpan.addEventListener("keydown", onKey);
+  }
+
+  // cssEscape shim — avoids importing the CSS escape API for one call.
+  function cssEscape(s: string): string {
+    if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+      return CSS.escape(s);
+    }
+    return s.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  }
+
+  // ---------------------------------------------------------------------------
+  // Initial state — assemble tabs from store + URL hash, mount playground.
+  //
+  // Precedence for the *active* tab on first load:
+  //   1. URL #code/<payload>  → opens as a transient tab, active
+  //   2. store.activeId       → the most recently edited saved program
+  //   3. first saved program  → fallback when activeId is stale/missing
+  //   4. nothing              → fresh transient tab with starter code
+  // All other saved programs come in as inactive tabs so the user can flip
+  // back to them.
+  // ---------------------------------------------------------------------------
+  const store = loadStore();
+  const shared = readCodeFromHash(location.hash);
+  // Saved programs become inactive tabs initially; we activate one below.
+  tabs = store.programs.map((p: SavedProgram) => ({
+    id: p.id,
+    name: p.name,
+    isTransient: false,
+    code: p.code,
+    output: { text: "(idle — press Run)", state: "idle" },
+  }));
+
+  let initialCode: string;
+  if (shared) {
+    // The URL hash encodes *somebody's* program. If it byte-for-byte matches
+    // one of the user's saved programs, that's almost certainly the user's
+    // own reload after editing that program (the URL was being kept fresh by
+    // onEdit). Activate the saved program directly instead of opening a
+    // duplicate transient. Otherwise, treat it as a real shared link from
+    // someone else — opens as a transient preview alongside the user's own
+    // saved tabs.
+    const match = tabs.find((t) => t.code === shared.code);
+    if (match) {
+      initialCode = match.code;
+      activeTabId = match.id;
+      setActive(match.id);
+      // Consume the hash so the address bar doesn't keep showing the
+      // payload after we've already absorbed it.
+      history.replaceState(null, "", location.pathname + location.search);
+    } else {
+      const t = newTransientId();
+      tabs = [
+        ...tabs,
+        {
+          id: t,
+          // Use the encoded filename if there was one, else "Shared". A
+          // .kex suffix makes the tab feel like a real file (matching the
+          // pattern from examples picked via the dropdown).
+          name: shared.name ?? "Shared",
+          isTransient: true,
+          code: shared.code,
+          output: { text: "(idle — press Run)", state: "idle" },
+        },
+      ];
+      initialCode = shared.code;
+      activeTabId = t;
+      setActive(null);
+    }
+  } else if (store.activeId && tabs.some((t) => t.id === store.activeId)) {
+    initialCode = tabs.find((t) => t.id === store.activeId)!.code;
+    activeTabId = store.activeId;
+  } else if (tabs.length > 0) {
+    // Fall back to the most recently updated program.
+    const mostRecent = [...tabs].sort((a, b) => {
+      const ap = store.programs.find((p) => p.id === a.id);
+      const bp = store.programs.find((p) => p.id === b.id);
+      return (bp?.updatedAt ?? 0) - (ap?.updatedAt ?? 0);
+    })[0]!;
+    initialCode = mostRecent.code;
+    activeTabId = mostRecent.id;
+    setActive(mostRecent.id);
+  } else {
+    // Fresh visitor — open a starter transient tab.
+    const t = newTab();
+    initialCode = STARTER_CODE;
+    activeTabId = t;
+    setActive(null);
+  }
+  renderTabs();
+
+  // ---------------------------------------------------------------------------
+  // onEdit — closes over the active tab. Saved tab → touchProgram; transient
+  // → no store write. URL hash always refreshes so the address bar is a live
+  // share link for whatever's on screen (filename included, so the recipient
+  // sees a real `.kex` tab name instead of "Shared").
+  // ---------------------------------------------------------------------------
+  const refreshUrlForActive = (codeOverride?: string) => {
+    const t = activeTab();
+    if (!t) return;
+    const code = codeOverride ?? handle?.getValue() ?? t.code;
+    replaceHash(encodeCodeHash(code, t.name));
+  };
+
+  const onEdit = (code: string) => {
+    const t = activeTab();
+    if (!t) return;
+    t.code = code;
+    if (!t.isTransient) {
+      touchProgram(t.id, code);
+    }
+    replaceHash(encodeCodeHash(code, t.name));
+  };
+
+  // Drive the running…/ready indicator on the output pane header. After each
+  // run, snapshot the result into the active tab's output cache so switching
+  // tabs and coming back restores it.
+  const wrapRun = async () => {
+    if (!handle) return;
+    runIndicator?.classList.remove("hidden");
+    await handle.run();
+    runIndicator?.classList.add("hidden");
+    const t = activeTab();
+    if (t) {
+      t.output = {
+        text: outputEl.textContent ?? "",
+        state: outputEl.dataset.state ?? "idle",
+      };
+    }
+  };
+
+  mountPlayground({
+    editorContainer: editorEl,
+    outputEl,
+    statusEl,
+    initialCode,
+    onEdit,
+  }).then((h) => {
+    handle = h;
+  });
+
+  // ---------------------------------------------------------------------------
+  // Wire up DOM events
+  // ---------------------------------------------------------------------------
+
+  runBtn.addEventListener("click", wrapRun);
+
+  // Cmd/Ctrl+Enter runs from anywhere in the editor. Capture phase so we beat
+  // Monaco's own keybinding handler.
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        wrapRun();
+      }
+    },
+    { capture: true },
+  );
+
+  shareBtn.addEventListener("click", async () => {
+    if (!handle) return;
+    const t = activeTab();
+    replaceHash(encodeCodeHash(handle.getValue(), t?.name));
+    try {
+      await navigator.clipboard.writeText(location.href);
+      if (shareLabel) {
+        const prev = shareLabel.textContent;
+        shareLabel.textContent = "Link copied!";
+        setTimeout(() => {
+          if (shareLabel) shareLabel.textContent = prev;
+        }, 1600);
+      }
+    } catch {
+      // clipboard write can be blocked by permissions; URL is in the bar.
+    }
+  });
+
+  saveBtn.addEventListener("click", saveAsNew);
+
+  clearBtn.addEventListener("click", () => {
+    outputEl.textContent = "";
+    outputEl.dataset.state = "idle";
+    const t = activeTab();
+    if (t) t.output = { text: "", state: "idle" };
+  });
+
+  // Examples open in a new transient tab — keeps the user's other work intact
+  // and matches the "transient + Save as new" model from the design pass.
+  // The tab name (and the URL hash) uses `exampleFilename(ex)` so the same
+  // `.kex` filename flows through to anyone opening a shared link.
+
+  examplesSelect.addEventListener("change", () => {
+    const slug = examplesSelect.value;
+    if (!slug) return;
+    const ex = EXAMPLES.find((e) => e.slug === slug);
+    if (!ex) return;
+    const code = ex.fullCode ?? ex.code;
+    examplesSelect.value = "";
+
+    snapshotActive();
+    const id = newTransientId();
+    tabs = [
+      ...tabs,
+      {
+        id,
+        name: exampleFilename(ex),
+        isTransient: true,
+        code,
+        output: { text: "(idle — press Run)", state: "idle" },
+      },
+    ];
+    activeTabId = id;
+    handle?.setValue(code, { silent: true });
+    outputEl.textContent = "(idle — press Run)";
+    outputEl.dataset.state = "idle";
+    setActive(null);
+    replaceHash(encodeCodeHash(code, exampleFilename(ex)));
+    renderTabs();
+    setTimeout(wrapRun, 0);
+  });
+
+  // Tab bar clicks — activate, close, or rename depending on target.
+  tabBarEl.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    const closeBtn = target.closest("[data-close-id]") as HTMLElement | null;
+    if (closeBtn) {
+      e.stopPropagation();
+      closeTab(closeBtn.dataset.closeId!);
+      return;
+    }
+    const tab = target.closest("[data-tab-id]") as HTMLElement | null;
+    if (tab) {
+      switchToTab(tab.dataset.tabId!);
+    }
+  });
+
+  // Double-click on a saved tab's name span → inline rename.
+  tabBarEl.addEventListener("dblclick", (e) => {
+    const nameSpan = e.target as HTMLElement;
+    if (!nameSpan.classList.contains("pg-tab-name")) return;
+    const tabEl = nameSpan.closest("[data-tab-id]") as HTMLElement | null;
+    if (!tabEl) return;
+    startRename(tabEl.dataset.tabId!);
+  });
+
+  newTabBtn.addEventListener("click", () => {
+    snapshotActive();
+    const id = newTab();
+    const tab = tabs.find((t) => t.id === id)!;
+    activeTabId = id;
+    handle?.setValue(tab.code, { silent: true });
+    outputEl.textContent = tab.output.text;
+    outputEl.dataset.state = tab.output.state;
+    setActive(null);
+    replaceHash(encodeCodeHash(tab.code, tab.name));
+    renderTabs();
+  });
+</script>

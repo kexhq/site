@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import Code from "~/components/Code.astro";
-import { EXAMPLES } from "~/data/examples";
+import { EXAMPLES, exampleFilename } from "~/data/examples";
 import { REPO } from "~/data/site";
 
 const heroExample = EXAMPLES.find((e) => e.slug === "vectors")!;
@@ -61,7 +61,7 @@ const WHY = [
       <h1
         class="mx-auto mt-4 max-w-3xl text-[40px] font-extrabold leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] sm:text-[56px]"
       >
-        Pragmatically Functional for BEAM and More
+        Pragmatically Functional Language for BEAM & More!
       </h1>
 
       <p
@@ -100,6 +100,7 @@ const WHY = [
         code={heroExample.code}
         output={heroExample.output}
         file="examples/vectors_advanced.kex"
+        openInPlayground={{ code: heroExample.fullCode ?? heroExample.code, name: exampleFilename(heroExample) }}
       />
     </div>
   </section>
@@ -179,6 +180,7 @@ const WHY = [
       code={fizzbuzzExample.code}
       output={fizzbuzzExample.output}
       file="fizzbuzz.kex"
+      openInPlayground={{ code: fizzbuzzExample.fullCode ?? fizzbuzzExample.code, name: exampleFilename(fizzbuzzExample) }}
     />
   </section>
 
@@ -213,6 +215,7 @@ const WHY = [
           code={purityExample.code}
           output={purityExample.output}
           file="purity.kex"
+          openInPlayground={{ code: purityExample.fullCode ?? purityExample.code, name: exampleFilename(purityExample) }}
         />
       </div>
     </div>
@@ -242,6 +245,7 @@ const WHY = [
       code={traitExample.code}
       output={traitExample.output}
       file="traits.kex"
+      openInPlayground={{ code: traitExample.fullCode ?? traitExample.code, name: exampleFilename(traitExample) }}
     />
   </section>
 

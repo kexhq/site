@@ -8,7 +8,7 @@ import PatternMatching from "~/components/lessons/PatternMatching.astro";
 import Records from "~/components/lessons/Records.astro";
 import Make from "~/components/lessons/Make.astro";
 import Chaining from "~/components/lessons/Chaining.astro";
-import Effects from "~/components/lessons/Effects.astro";
+import Purity from "~/components/lessons/Purity.astro";
 import SmallProject from "~/components/lessons/SmallProject.astro";
 
 const LESSON_COMPONENTS: Record<string, any> = {
@@ -19,7 +19,7 @@ const LESSON_COMPONENTS: Record<string, any> = {
   records: Records,
   make: Make,
   chaining: Chaining,
-  effects: Effects,
+  purity: Purity,
   "small-project": SmallProject,
 };
 
@@ -28,23 +28,36 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
 ---
 
 <BaseLayout
-  title="REPL — kex"
+  title="REPL | Kex"
   description="A live, in-browser kex REPL — the same tree-walk interpreter as the CLI, compiled to WebAssembly. Follow the tutorial alongside it, or just start typing."
 >
-  <section class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]">
+  <section
+    class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]"
+  >
     <div class="container-page py-12">
-      <div class="flex items-center gap-2 font-mono text-[12px] text-[var(--color-muted)]">
+      <div
+        class="flex items-center gap-2 font-mono text-[12px] text-[var(--color-muted)]"
+      >
         <span class="relative flex h-2 w-2">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50"></span>
-          <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]"></span>
+          <span
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50"
+          ></span>
+          <span
+            class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]"
+          ></span>
         </span>
-        in-browser interpreter · wasm
+        Interpreted · WebAssembly
       </div>
-      <h1 class="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]">
+      <h1
+        class="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]"
+      >
         REPL
       </h1>
-      <p class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]">
-        The full kex interpreter in your browser — follow the tutorial on the right, or just start typing.
+      <p
+        class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]"
+      >
+        The real Kex interpreter in your browser! Follow the tutorial on the
+        right, or just start typing.
       </p>
     </div>
   </section>
@@ -56,11 +69,15 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
         <div
           class="surface-code overflow-hidden rounded-2xl border border-[var(--color-code-border)] shadow-[0_18px_40px_-24px_rgba(13,12,40,0.45)]"
         >
-          <div class="flex items-center gap-2 border-b border-[var(--color-code-border)] px-4 py-2.5">
+          <div
+            class="flex items-center gap-2 border-b border-[var(--color-code-border)] px-4 py-2.5"
+          >
             <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"></span>
             <span class="h-2.5 w-2.5 rounded-full bg-[#febc2e]"></span>
             <span class="h-2.5 w-2.5 rounded-full bg-[#28c840]"></span>
-            <span class="ml-2 font-mono text-[12px] text-[#8a8aa0]">kex repl — wasm</span>
+            <span class="ml-2 font-mono text-[12px] text-[#8a8aa0]"
+              >kex repl — wasm</span
+            >
             <span
               id="repl-status"
               class="ml-auto rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10.5px] text-[#6b6b80]"
@@ -80,7 +97,9 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
       <aside class="lg:sticky lg:top-24 lg:self-start">
         <div class="rounded-2xl border border-[var(--color-line)] p-5">
           <div class="flex items-center justify-between">
-            <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]">
+            <p
+              class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-faint)]"
+            >
               Tutorial
             </p>
             <span
@@ -101,7 +120,10 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
                     <ul class="mt-1 flex flex-col">
                       {section.entries.map((entry) => (
                         <li>
-                          <a href={`#${entry.slug}`} data-lesson-link={entry.slug}>
+                          <a
+                            href={`#${entry.slug}`}
+                            data-lesson-link={entry.slug}
+                          >
                             {entry.title}
                           </a>
                         </li>
@@ -118,7 +140,11 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
               lessons.map((lesson, i) => {
                 const Lesson = LESSON_COMPONENTS[lesson.slug];
                 return (
-                  <div class="prose-compact" data-lesson-panel={lesson.slug} hidden={i !== 0}>
+                  <div
+                    class="prose-compact"
+                    data-lesson-panel={lesson.slug}
+                    hidden={i !== 0}
+                  >
                     <Lesson />
                   </div>
                 );
@@ -126,13 +152,26 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
             }
           </div>
 
-          <div class="mt-6 flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4">
+          <div
+            class="mt-6 flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4"
+          >
             <button
               type="button"
               data-prev
               class="lesson-nav-btn inline-flex items-center gap-1.5"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                ><path d="M19 12H5M11 18l-6-6 6-6"></path></svg
+              >
               Prev
             </button>
             <button
@@ -141,7 +180,17 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
               class="lesson-nav-btn inline-flex items-center gap-1.5"
             >
               Next
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg
+              >
             </button>
           </div>
         </div>
@@ -239,7 +288,10 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     border-radius: 0.5rem;
     padding: 0.4rem 0.8rem;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    transition:
+      border-color 0.15s,
+      background 0.15s,
+      color 0.15s;
   }
   .lesson-nav-btn:hover:not(:disabled) {
     border-color: var(--color-line-strong);
@@ -255,11 +307,15 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
 <script>
   import { mountRepl, type ReplHandle } from "~/lib/repl";
 
-  const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-lesson-panel]"));
+  const panels = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-lesson-panel]"),
+  );
   const progressEl = document.querySelector<HTMLElement>("[data-progress]");
   const prevBtn = document.querySelector<HTMLButtonElement>("[data-prev]");
   const nextBtn = document.querySelector<HTMLButtonElement>("[data-next]");
-  const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]"));
+  const tocLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]"),
+  );
   const tocDetails = document.querySelector<HTMLDetailsElement>(".lesson-toc");
   const slugs = panels.map((p) => p.dataset.lessonPanel!);
 
@@ -311,13 +367,16 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     mountRepl(container, (status) => {
       if (!statusEl) return;
       if (status === "ready") statusEl.textContent = "ready";
-      else if (status === "error") statusEl.textContent = "failed to load — reload to retry";
+      else if (status === "error")
+        statusEl.textContent = "failed to load — reload to retry";
       else statusEl.textContent = "loading…";
     }).then((h) => {
       handle = h;
     });
 
-    document.addEventListener("kex-repl:paste", ((e: CustomEvent<{ code: string }>) => {
+    document.addEventListener("kex-repl:paste", ((
+      e: CustomEvent<{ code: string }>,
+    ) => {
       handle?.pasteText(e.detail.code);
     }) as EventListener);
   }
