@@ -1,6 +1,7 @@
 ---
 import { highlightKex } from "~/lib/highlight";
 import { repoBlob } from "~/data/site";
+import { playgroundHref } from "~/lib/share";
 
 interface Props {
   code: string;
@@ -18,15 +19,36 @@ interface Props {
   /** Render an output pane below the code (Kex program stdout). */
   output?: string;
   repl?: boolean;
+  /**
+   * If set, renders an "Open in Playground" link that loads this code into the
+   * playground via a share-style URL. Pass the *runnable* program — usually
+   * the matching Example's `fullCode`, not the trimmed snippet shown here —
+   * so the playground opens with something that actually evaluates.
+   */
+  openInPlayground?: string;
 }
 
-const { code, title, file, source, caption, compact, bare, output, repl } =
-  Astro.props;
+const {
+  code,
+  title,
+  file,
+  source,
+  caption,
+  compact,
+  bare,
+  output,
+  repl,
+  openInPlayground,
+} = Astro.props;
 
 const highlighted = highlightKex(code.replace(/\n$/, ""));
 const hasOutput = typeof output === "string" && output.trim().length > 0;
 const hasTop = bare || !repl;
 const label = file ?? title;
+const playgroundLink =
+  typeof openInPlayground === "string" && openInPlayground.length > 0
+    ? playgroundHref(openInPlayground)
+    : null;
 ---
 
 <figure
@@ -46,31 +68,56 @@ const label = file ?? title;
         {label && (
           <span class="font-mono text-[12px] text-[#8a8aa0]">{label}</span>
         )}
-        <button
-          type="button"
-          data-copy
-          data-copy-target="next-code-block"
-          class="ml-auto hidden items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] text-[#9a9ab0] transition hover:bg-white/5 hover:text-[#e6e6f0] sm:inline-flex"
-          aria-label="Copy code"
-        >
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+        <div class="ml-auto flex items-center gap-1.5">
+          {playgroundLink && (
+            <a
+              href={playgroundLink}
+              class="hidden items-center gap-1 rounded-md px-2 py-1 font-mono text-[11px] text-[#e6c178] transition hover:bg-white/5 hover:text-[#f0d4a0] sm:inline-flex"
+              aria-label="Open in Playground"
+              title="Open in Playground"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+              Playground
+            </a>
+          )}
+          <button
+            type="button"
+            data-copy
+            data-copy-target="next-code-block"
+            class="hidden items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] text-[#9a9ab0] transition hover:bg-white/5 hover:text-[#e6e6f0] sm:inline-flex"
+            aria-label="Copy code"
           >
-            <>
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </>
-          </svg>
-          <span data-copy-label>Copy</span>
-        </button>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <>
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </>
+            </svg>
+            <span data-copy-label>Copy</span>
+          </button>
+        </div>
       </div>
     )
   }
@@ -153,6 +200,29 @@ const label = file ?? title;
         </svg>
         Paste to REPL
       </button>
+
+      {playgroundLink && (
+        <a
+          href={playgroundLink}
+          class="inline-flex items-center gap-1 rounded-md bg-[var(--color-accent-soft)] px-2 py-0.5 font-mono text-[10px] font-medium text-[var(--color-accent-ink)] transition hover:bg-[var(--color-line-strong)]"
+          aria-label="Open in Playground"
+        >
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+          Playground
+        </a>
+      )}
 
       <button
         type="button"

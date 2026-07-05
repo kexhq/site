@@ -82,7 +82,7 @@ const grouped = categories
                       </a>
                     </div>
                     <div class="lg:col-span-8">
-                      <Code code={ex.code} output={ex.output} file={ex.source} />
+                      <Code code={ex.code} output={ex.output} file={ex.source} openInPlayground={ex.fullCode ?? ex.code} />
                     </div>
                   </div>
                 </article>

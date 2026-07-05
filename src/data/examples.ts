@@ -1,3 +1,10 @@
+// Most gallery snippets below are already complete runnable programs, so they
+// ship as-is to the playground. The one exception is `purity`, whose gallery
+// snippet is illustrative-but-not-runnable; for that one, `fullCode` overrides
+// `code` with the real `purity.kex` source (loaded via Vite's `?raw` suffix,
+// which yields the file's contents as a string at build time).
+import purityFull from "~/examples/purity.kex?raw";
+
 export interface Example {
   slug: string;
   title: string;
@@ -5,14 +12,26 @@ export interface Example {
   category: "Basics" | "Types" | "Control" | "Effects" | "DSL";
   /** Repo-relative path this example is drawn from (e.g. "examples/hello.kex"). */
   source: string;
+  /**
+   * Snippet shown on the gallery / landing page and used as the playground
+   * load by default. Kept tight for readability but is itself a complete
+   * program in every case below.
+   */
   code: string;
+  /**
+   * Optional override for the playground load and "Open in Playground" share
+   * links. Set only when the gallery snippet is illustrative-but-not-runnable
+   * and a real source file exists to load instead. Falls back to `code` when
+   * absent (the common case).
+   */
+  fullCode?: string;
   output?: string;
 }
 
 /**
  * Curated, hand-verified snippets drawn from the Kex examples in the language
- * repo. Kept self-contained and short so they read well on a landing page and
- * in an examples gallery.
+ * repo. Most are the whole program; a few are trimmed for gallery readability
+ * (with `fullCode` pointing at the runnable source where needed).
  */
 export const EXAMPLES: Example[] = [
   {
@@ -103,7 +122,11 @@ main do
   let combined = position + velocity * 2.0
   IO.printLine("next position: \${combined.to(String)}")
 end`,
-    output: "next position: (5.0, 3.0)",
+  // The trimmed snippet above shows just the operator-overload core; the
+  // real file has static constructors, polar coordinates, lerp, rotate,
+  // dot product, etc. — a separate showcase, not the unabridged version, so
+  // we don't load it as `fullCode`.
+  output: "next position: (5.0, 3.0)",
   },
   {
     slug: "fizzbuzz",
@@ -163,6 +186,9 @@ main do
     Error(why)  -> IO.printLine("bad port: \${why}")
   end
 end`,
+    // The repo's error_handling.kex has more (aspirational, not-yet-stdlib)
+    // functions below this point; they don't run in the wasm interpreter, so
+    // we ship the trimmed-but-complete version above as the playground load.
     output: "listening on 8080",
   },
   {
@@ -171,7 +197,7 @@ end`,
     tagline:
       "Pure code can’t call foul code. The compiler rejects it before the program ever runs.",
     category: "Effects",
-    source: "README.md",
+    source: "examples/purity.kex",
     code:
       `# Pure function, no side effects, can be called from anywhere
 let wordCountFrom(lines: String[]) -> Integer do
@@ -197,9 +223,11 @@ foul wordCount(path: String) -> [Integer] do
 end
 
 # ...
-`
-
-
+`,
+    // The gallery snippet above is hand-written to illustrate the concept;
+    // the runnable program in the repo is the simpler compute/readConfig
+    // pair from examples/purity.kex — that's what the playground loads.
+    fullCode: purityFull,
   },
   {
     slug: "currying",
@@ -270,6 +298,8 @@ end`,
 
   IO.printLine(list.to(String))
 end`,
+    // The repo's mutating.kex has more (countErrors, an accumulator Process)
+    // below this point; the trimmed main above is the runnable core.
     output: "[20, 40, 60]",
   },
   {
@@ -291,7 +321,7 @@ end`,
     end
   end
 
-  post "/users" do |req|
+    post "/users" do |req|
     let user = UserService.create(req.body)
     return Response.created(user) if user.ok?
 

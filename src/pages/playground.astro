@@ -1,0 +1,326 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { EXAMPLES } from "~/data/examples";
+
+const categories = ["Basics", "Types", "Control", "Effects", "DSL"] as const;
+const grouped = categories
+  .map((c) => ({
+    category: c,
+    items: EXAMPLES.filter((e) => e.category === c),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+<BaseLayout
+  title="Playground — kex"
+  description="Write, run, and share Kex programs in the browser — a Monaco editor backed by the real wasm interpreter. Examples, run output, and shareable links."
+>
+  <section
+    class="border-b border-[var(--color-line)] bg-[var(--color-bg-subtle)]"
+  >
+    <div class="container-page py-12">
+      <div
+        class="flex items-center gap-2 font-mono text-[12px] text-[var(--color-muted)]"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50"
+          ></span>
+          <span
+            class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]"
+          ></span>
+        </span>
+        Interpreted · WebAssembly
+      </div>
+      <h1
+        class="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-[var(--color-ink)] sm:text-[32px]"
+      >
+        Playground
+      </h1>
+      <p
+        class="mt-3 max-w-2xl text-[16px] leading-relaxed text-[var(--color-muted)]"
+      >
+        Write, run and share Kex programs, on the real interpreter
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page py-8">
+    <!-- Toolbar -->
+    <div
+      class="flex flex-wrap items-center gap-2 border border-[var(--color-line)] bg-[var(--color-bg)] rounded-t-2xl border-b-0 px-3 py-2.5"
+    >
+      <label class="relative inline-flex items-center">
+        <span class="sr-only">Open an example</span>
+        <select
+          id="pg-examples"
+          class="appearance-none rounded-lg border border-[var(--color-line)] bg-[var(--color-bg)] py-1.5 pl-3 pr-8 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] focus:border-[var(--color-accent)] focus:outline-none"
+          aria-label="Open an example"
+        >
+          <option value="">Open example…</option>
+          {
+            grouped.map((g) => (
+              <optgroup label={g.category}>
+                {g.items.map((ex) => (
+                  <option value={ex.slug}>{ex.title}</option>
+                ))}
+              </optgroup>
+            ))
+          }
+        </select>
+        <svg
+          class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-faint)]"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg
+        >
+      </label>
+
+      <div class="mx-1 h-5 w-px bg-[var(--color-line)]"></div>
+
+      <button
+        type="button"
+        id="pg-run"
+        class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-ink)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-bg)] transition-colors hover:bg-[var(--color-ink-soft)]"
+      >
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg
+        >
+        Run
+        <span
+          class="ml-1 hidden rounded bg-white/15 px-1 py-0.5 text-[10px] font-normal sm:inline"
+          >⌘↵</span
+        >
+      </button>
+
+      <button
+        type="button"
+        id="pg-share"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"
+          ></circle><circle cx="18" cy="19" r="3"></circle><path
+            d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg
+        >
+        <span data-share-label>Share</span>
+      </button>
+
+      <button
+        type="button"
+        id="pg-clear"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><path
+            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+          ></path></svg
+        >
+        Clear
+      </button>
+
+      <span
+        id="pg-status"
+        class="ml-auto rounded-full bg-[var(--color-bg-muted)] px-2 py-0.5 font-mono text-[10.5px] text-[var(--color-faint)]"
+        >loading…</span
+      >
+    </div>
+
+    <!-- Editor + Output -->
+    <div
+      class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] lg:grid-cols-2 lg:border-t-0"
+    >
+      <div
+        class="surface-code relative min-h-[420px] border-b border-[var(--color-code-border)] lg:border-b-0 lg:border-r"
+      >
+        <div
+          class="border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
+        >
+          program.kex
+        </div>
+        <div id="pg-editor" class="h-[560px]"></div>
+      </div>
+
+      <div class="surface-code relative min-h-[420px] flex flex-col">
+        <div
+          class="flex items-center justify-between border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
+        >
+          <span>output</span>
+          <span data-run-indicator class="hidden text-[#f0c987]">running…</span>
+        </div>
+        <pre
+          id="pg-output"
+          data-state="idle"
+          class="scroll-slim m-0 flex-1 overflow-auto px-4 py-4 font-mono text-[13px] leading-[1.6] text-[#c9e0a0]"><code>(idle — press Run)</code></pre>
+      </div>
+    </div>
+
+    <p class="mt-3 text-center text-[13px] text-[var(--color-faint)]">
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >⌘</kbd
+      >
+      /
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >Ctrl</kbd
+      >
+      +
+      <kbd
+        class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
+        >Enter</kbd
+      >
+      to run · the URL is updated as you type — copy it to share.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  #pg-output[data-state="error"] {
+    color: #e0a0a0;
+  }
+  #pg-output[data-state="idle"] {
+    color: #6b6b80;
+    font-style: italic;
+  }
+</style>
+
+<script>
+  import {
+    mountPlayground,
+    STARTER_CODE,
+    loadSavedCode,
+    saveCode,
+    type PlaygroundHandle,
+  } from "~/lib/playground";
+  import { encodeCodeHash, readCodeFromHash, replaceHash } from "~/lib/share";
+  import { EXAMPLES } from "~/data/examples";
+
+  const editorEl = document.getElementById("pg-editor") as HTMLElement;
+  const outputEl = document.getElementById("pg-output") as HTMLElement;
+  const statusEl = document.getElementById("pg-status") as HTMLElement;
+  const runBtn = document.getElementById("pg-run") as HTMLButtonElement;
+  const shareBtn = document.getElementById("pg-share") as HTMLButtonElement;
+  const clearBtn = document.getElementById("pg-clear") as HTMLButtonElement;
+  const examplesSelect = document.getElementById(
+    "pg-examples",
+  ) as HTMLSelectElement;
+  const runIndicator = document.querySelector<HTMLElement>(
+    "[data-run-indicator]",
+  );
+  const shareLabel = shareBtn.querySelector("[data-share-label]");
+
+  // Initial code precedence: a shared #code/ link beats a saved draft, which
+  // beats the starter. The starter is the only path that's guaranteed
+  // error-free on day one.
+  const initialCode =
+    readCodeFromHash(location.hash) ?? loadSavedCode() ?? STARTER_CODE;
+
+  let handle: PlaygroundHandle | undefined;
+
+  const onEdit = (code: string) => {
+    // Mirror the buffer into the URL so the address bar is always shareable,
+    // and into localStorage so an unsaved draft survives a refresh that
+    // doesn't carry a hash.
+    replaceHash(encodeCodeHash(code));
+    saveCode(code);
+  };
+
+  // Drive the running…/ready indicator on the output pane header.
+  const wrapRun = async () => {
+    if (!handle) return;
+    runIndicator?.classList.remove("hidden");
+    await handle.run();
+    runIndicator?.classList.add("hidden");
+  };
+
+  mountPlayground({
+    editorContainer: editorEl,
+    outputEl,
+    statusEl,
+    initialCode,
+    onEdit,
+  }).then((h) => {
+    handle = h;
+  });
+
+  runBtn.addEventListener("click", wrapRun);
+
+  // Cmd/Ctrl+Enter runs from anywhere in the editor — same shortcut the TS
+  // playground uses.
+  window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      wrapRun();
+    }
+  });
+
+  // Share = serialize current buffer into the hash (already kept fresh by
+  // onEdit, but doing it explicitly guarantees the latest keystroke is in
+  // flight), then copy the URL to the clipboard.
+  shareBtn.addEventListener("click", async () => {
+    if (!handle) return;
+    replaceHash(encodeCodeHash(handle.getValue()));
+    try {
+      await navigator.clipboard.writeText(location.href);
+      if (shareLabel) {
+        const prev = shareLabel.textContent;
+        shareLabel.textContent = "Link copied!";
+        setTimeout(() => {
+          if (shareLabel) shareLabel.textContent = prev;
+        }, 1600);
+      }
+    } catch {
+      // clipboard write can be blocked by permissions; the URL is still in
+      // the address bar so the user can copy manually.
+    }
+  });
+
+  clearBtn.addEventListener("click", () => {
+    if (!handle) return;
+    handle.clearOutput();
+  });
+
+  // Selecting an example loads its full source (fullCode, not the trimmed
+  // gallery snippet) into the editor and re-runs. Resets the select back to
+  // the placeholder so the same example can be re-picked.
+  examplesSelect.addEventListener("change", () => {
+    const slug = examplesSelect.value;
+    if (!slug) return;
+    const ex = EXAMPLES.find((e) => e.slug === slug);
+    if (!ex) return;
+    handle?.setValue(ex.fullCode ?? ex.code);
+    examplesSelect.value = "";
+    // Auto-run on example open — feels more like "let's see it go" than a
+    // two-step load-then-run.
+    setTimeout(wrapRun, 0);
+  });
+</script>
