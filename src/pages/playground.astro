@@ -147,6 +147,33 @@ const grouped = categories
         Clear
       </button>
 
+      <!-- Layout toggle: stacked (editor on top, output below) vs side-by-side.
+           Persisted in localStorage so the user's preference sticks. -->
+      <div
+        class="flex items-center overflow-hidden rounded-lg border border-[var(--color-line)]"
+        role="group"
+        aria-label="Editor layout"
+      >
+        <button
+          type="button"
+          data-layout-btn="stacked"
+          aria-pressed="true"
+          class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
+          title="Stacked — output below editor"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+        </button>
+        <button
+          type="button"
+          data-layout-btn="side"
+          aria-pressed="false"
+          class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
+          title="Side-by-side — output next to editor"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+        </button>
+      </div>
+
       <span
         id="pg-status"
         class="ml-auto rounded-full bg-[var(--color-bg-muted)] px-2 py-0.5 font-mono text-[10.5px] text-[var(--color-faint)]"
@@ -156,10 +183,13 @@ const grouped = categories
 
     <!-- Editor + Output -->
     <div
-      class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] lg:grid-cols-2 lg:border-t-0"
+      id="pg-split"
+      data-layout="stacked"
+      class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] border-t-0"
     >
       <div
-        class="surface-code relative min-h-[420px] border-b border-[var(--color-code-border)] lg:border-b-0 lg:border-r"
+        id="pg-editor-pane"
+        class="surface-code relative min-h-[420px]"
       >
         <div
           class="border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
@@ -169,7 +199,7 @@ const grouped = categories
         <div id="pg-editor" class="h-[560px]"></div>
       </div>
 
-      <div class="surface-code relative min-h-[420px] flex flex-col">
+      <div id="pg-output-pane" class="surface-code relative min-h-[300px] flex flex-col">
         <div
           class="flex items-center justify-between border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
         >
@@ -198,7 +228,7 @@ const grouped = categories
         class="rounded border border-[var(--color-line)] bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[11px]"
         >Enter</kbd
       >
-      to run · the URL is updated as you type — copy it to share.
+      to run · your draft is saved automatically · Share copies a link.
     </p>
   </section>
 </BaseLayout>
@@ -210,6 +240,20 @@ const grouped = categories
   #pg-output[data-state="idle"] {
     color: #6b6b80;
     font-style: italic;
+  }
+  /* Layout: default is stacked (editor on top, output below).
+     `data-layout="side"` puts them side-by-side on large screens; mobile
+     always stacks since there's no room for two columns. The divider follows
+     the layout — vertical line between panes when side-by-side, horizontal
+     when stacked. */
+  #pg-split { grid-template-columns: 1fr; }
+  #pg-editor-pane { border-bottom: 1px solid var(--color-code-border); }
+  @media (min-width: 1024px) {
+    #pg-split[data-layout="side"] { grid-template-columns: 1fr 1fr; }
+    #pg-split[data-layout="side"] #pg-editor-pane {
+      border-bottom: 0;
+      border-right: 1px solid var(--color-code-border);
+    }
   }
 </style>
 
@@ -237,6 +281,44 @@ const grouped = categories
     "[data-run-indicator]",
   );
   const shareLabel = shareBtn.querySelector("[data-share-label]");
+  const splitEl = document.getElementById("pg-split") as HTMLElement;
+  const layoutBtns = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-layout-btn]"),
+  );
+
+  const LAYOUT_KEY = "kex-playground-layout";
+  type Layout = "stacked" | "side";
+  function loadLayoutPref(): Layout {
+    try {
+      return localStorage.getItem(LAYOUT_KEY) === "side" ? "side" : "stacked";
+    } catch {
+      return "stacked";
+    }
+  }
+  function saveLayoutPref(layout: Layout) {
+    try {
+      localStorage.setItem(LAYOUT_KEY, layout);
+    } catch {
+      // localStorage unavailable — non-fatal, layout just won't persist.
+    }
+  }
+  function applyLayout(layout: Layout) {
+    splitEl.dataset.layout = layout;
+    layoutBtns.forEach((b) =>
+      b.setAttribute(
+        "aria-pressed",
+        String(b.dataset.layoutBtn === layout),
+      ),
+    );
+  }
+  layoutBtns.forEach((b) =>
+    b.addEventListener("click", () => {
+      const next = b.dataset.layoutBtn as Layout;
+      applyLayout(next);
+      saveLayoutPref(next);
+    }),
+  );
+  applyLayout(loadLayoutPref());
 
   // Initial code precedence: a shared #code/ link beats a saved draft, which
   // beats the starter. The starter is the only path that's guaranteed
@@ -275,13 +357,18 @@ const grouped = categories
   runBtn.addEventListener("click", wrapRun);
 
   // Cmd/Ctrl+Enter runs from anywhere in the editor — same shortcut the TS
-  // playground uses.
-  window.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-      e.preventDefault();
-      wrapRun();
-    }
-  });
+  // playground uses. Capture phase so we beat Monaco's own keybinding
+  // handler, which would otherwise swallow the keystroke.
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        wrapRun();
+      }
+    },
+    { capture: true },
+  );
 
   // Share = serialize current buffer into the hash (already kept fresh by
   // onEdit, but doing it explicitly guarantees the latest keystroke is in
@@ -309,15 +396,21 @@ const grouped = categories
     handle.clearOutput();
   });
 
-  // Selecting an example loads its full source (fullCode, not the trimmed
-  // gallery snippet) into the editor and re-runs. Resets the select back to
-  // the placeholder so the same example can be re-picked.
+  // Selecting an example loads its source into the editor and re-runs.
+  // Silent-load: skip onEdit so the URL hash isn't updated by the load
+  // callback (we do it manually below) AND the user's saved draft in
+  // localStorage isn't overwritten — previewing an example shouldn't trash
+  // the user's own work. If they then edit the example, that edit becomes
+  // their new draft (intentionally).
   examplesSelect.addEventListener("change", () => {
     const slug = examplesSelect.value;
     if (!slug) return;
     const ex = EXAMPLES.find((e) => e.slug === slug);
     if (!ex) return;
-    handle?.setValue(ex.fullCode ?? ex.code);
+    const code = ex.fullCode ?? ex.code;
+    handle?.setValue(code, { silent: true });
+    // Still update the URL hash so the example link is shareable on its own.
+    replaceHash(encodeCodeHash(code));
     examplesSelect.value = "";
     // Auto-run on example open — feels more like "let's see it go" than a
     // two-step load-then-run.

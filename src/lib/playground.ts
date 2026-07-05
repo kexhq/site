@@ -31,7 +31,14 @@ export interface PlaygroundHandle {
   destroy(): void;
   /** Runs the current buffer through the interpreter, replaces the output pane. */
   run(): Promise<void>;
-  setValue(code: string): void;
+  /**
+   * Replaces the editor's contents. Pass `{ silent: true }` for programmatic
+   * loads (e.g. picking an example) — suppresses the next `onEdit` callback so
+   * the caller can decide separately whether to update the share hash and/or
+   * overwrite the saved draft. Default (`silent: false`) fires `onEdit`
+   * exactly like a user keystroke.
+   */
+  setValue(code: string, opts?: { silent?: boolean }): void;
   getValue(): string;
   /** Clears the output pane only. */
   clearOutput(): void;
@@ -140,9 +147,16 @@ export async function mountPlayground(
 
   // Debounce external side-effects of editing (URL hash update + localStorage
   // persistence). The editor itself stays instant; only the slower work is
-  // throttled.
+  // throttled. `suppressNextEdit` lets `setValue({ silent: true })` swap the
+  // buffer without triggering persistence — used by the examples dropdown so
+  // previewing an example doesn't overwrite the user's saved draft.
   let editTimer: ReturnType<typeof setTimeout> | null = null;
+  let suppressNextEdit = false;
   editor.onDidChangeModelContent(() => {
+    if (suppressNextEdit) {
+      suppressNextEdit = false;
+      return;
+    }
     if (!opts.onEdit) return;
     if (editTimer) clearTimeout(editTimer);
     editTimer = setTimeout(() => {
@@ -185,10 +199,13 @@ export async function mountPlayground(
     }
   };
 
-  const setValue = (code: string) => {
-    // Use the explicit edit push so onDidChangeModelContent fires and the
-    // URL/localStorage get re-synced — a silent setValue would leave the
-    // share hash stale, defeating "open example -> share" flows.
+  const setValue = (code: string, setValueOpts: { silent?: boolean } = {}) => {
+    // `executeEdits` is Monaco's standard "replace the whole buffer" gesture.
+    // It fires `onDidChangeModelContent` like a real keystroke; we suppress
+    // the resulting `onEdit` callback when the caller asked for a silent load
+    // so the URL hash / localStorage are left untouched for the caller to
+    // decide about.
+    if (setValueOpts.silent) suppressNextEdit = true;
     editor.executeEdits("playground", [
       {
         range: editor.getModel()!.getFullModelRange(),
