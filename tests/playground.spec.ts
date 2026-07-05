@@ -360,6 +360,35 @@ test.describe("/playground", () => {
     expect(tabs).toEqual(["* T Untitled"]);
   });
 
+  test("split ratio persists across reload", async ({ page }) => {
+    await page.goto("/playground");
+    await waitForEditor(page);
+
+    const sideBtn = page.locator('[data-layout-btn="side"]');
+    await sideBtn.click();
+
+    // Default ratio is now 60/40: "60fr 8px 40fr" in the inline style.
+    const ratio1 = await page.locator("#pg-split").evaluate((el) =>
+      el.style.gridTemplateColumns,
+    );
+    expect(ratio1).toBe("60fr 8px 40fr");
+
+    // Set a custom ratio via inline style + localStorage.
+    await page.evaluate(() => {
+      const el = document.getElementById("pg-split")!;
+      el.style.gridTemplateColumns = "65fr 8px 35fr";
+      localStorage.setItem("kex-playground-split-ratio", "65");
+    });
+
+    await page.reload();
+    await waitForEditor(page);
+    await sideBtn.click();
+    const ratio2 = await page.locator("#pg-split").evaluate((el) =>
+      el.style.gridTemplateColumns,
+    );
+    expect(ratio2).toBe("65fr 8px 35fr");
+  });
+
   test("layout toggle switches between stacked and side-by-side", async ({
     page,
   }) => {

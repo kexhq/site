@@ -1,0 +1,31 @@
+---
+export interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener"
+  class="hidden items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] text-[#9a9ab0] no-underline transition hover:bg-white/5 hover:text-[#e6e6f0] sm:inline-flex"
+  aria-label="Open in Playground"
+  title="Open in Playground"
+>
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+  Playground
+</a>

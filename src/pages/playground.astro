@@ -83,94 +83,6 @@ const grouped = categories
       </label>
 
       <div class="mx-1 h-5 w-px bg-[var(--color-line)]"></div>
-
-      <button
-        type="button"
-        id="pg-run"
-        class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-ink)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-bg)] transition-colors hover:bg-[var(--color-ink-soft)]"
-      >
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg
-        >
-        Run
-        <span
-          class="ml-1 hidden rounded bg-white/15 px-1 py-0.5 text-[10px] font-normal sm:inline"
-          >⌘↵</span
-        >
-      </button>
-
-      <button
-        type="button"
-        id="pg-share"
-        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
-      >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          ><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"
-          ></circle><circle cx="18" cy="19" r="3"></circle><path
-            d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg
-        >
-        <span data-share-label>Share</span>
-      </button>
-
-      <button
-        type="button"
-        id="pg-save"
-        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
-        title="Save the current buffer as a new program"
-      >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          ><path
-            d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
-          ></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline
-            points="7 3 7 8 15 8"></polyline></svg
-        >
-        <span data-save-label>Save as new</span>
-      </button>
-
-      <button
-        type="button"
-        id="pg-clear"
-        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
-      >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          ><path
-            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
-          ></path></svg
-        >
-        Clear
-      </button>
-
       <!-- Layout toggle: stacked (editor on top, output below) vs side-by-side.
            Persisted in localStorage so the user's preference sticks. -->
       <div
@@ -228,6 +140,93 @@ const grouped = categories
         </button>
       </div>
 
+      <button
+        type="button"
+        id="pg-run"
+        class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-ink)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-bg)] transition-colors hover:bg-[var(--color-ink-soft)]"
+      >
+        <svg
+          width="11"
+          height="11"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg
+        >
+        Run
+        <span
+          class="ml-1 hidden rounded bg-white/15 px-1 py-0.5 text-[10px] font-normal sm:inline"
+          >⌘↵</span
+        >
+      </button>
+
+      <button
+        type="button"
+        id="pg-save"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+        title="Save the current buffer as a new program"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><path
+            d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+          ></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline
+            points="7 3 7 8 15 8"></polyline></svg
+        >
+        <span data-save-label>Save as new</span>
+      </button>
+
+      <button
+        type="button"
+        id="pg-share"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] font-semibold text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"
+          ></circle><circle cx="18" cy="19" r="3"></circle><path
+            d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg
+        >
+        <span data-share-label>Share</span>
+      </button>
+
+      <button
+        type="button"
+        id="pg-clear"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-line)] px-3 py-1.5 font-mono text-[12.5px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-bg-subtle)]"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          ><path
+            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+          ></path></svg
+        >
+        Clear
+      </button>
+
       <span
         id="pg-status"
         class="ml-auto rounded-full bg-[var(--color-bg-muted)] px-2 py-0.5 font-mono text-[10.5px] text-[var(--color-faint)]"
@@ -257,11 +256,13 @@ const grouped = categories
     <div
       id="pg-split"
       data-layout="stacked"
-      class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] border-t-0"
+      class="grid overflow-hidden border border-[var(--color-line)] bg-[var(--color-code-bg)] border-t-0"
     >
       <div id="pg-editor-pane" class="surface-code relative min-h-[420px]">
-        <div id="pg-editor" class="h-[560px]"></div>
+        <div id="pg-editor" class="h-[800px]"></div>
       </div>
+
+      <div id="pg-split-handle"></div>
 
       <div
         id="pg-output-pane"
@@ -317,13 +318,47 @@ const grouped = categories
   #pg-editor-pane {
     border-bottom: 1px solid var(--color-code-border);
   }
+  /* Draggable split handle between editor and output. Hidden in stacked
+     mode; visible only in side-by-side (desktop). The grid ratio is set
+     inline by JS (not via CSS custom properties — browsers reject var()
+     attached to the fr unit). */
+  #pg-split-handle {
+    display: none;
+  }
   @media (min-width: 1024px) {
     #pg-split[data-layout="side"] {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 8px 1fr;
+    }
+    #pg-split[data-layout="side"] > * {
+      min-width: 0;
     }
     #pg-split[data-layout="side"] #pg-editor-pane {
       border-bottom: 0;
-      border-right: 1px solid var(--color-code-border);
+    }
+    #pg-split[data-layout="side"] #pg-split-handle {
+      display: block;
+      cursor: col-resize;
+      background: linear-gradient(
+        to right,
+        var(--color-code-bg) 0%,
+        var(--color-code-bg) 45%,
+        var(--color-code-border) 45%,
+        var(--color-code-border) 55%,
+        var(--color-code-bg) 55%,
+        var(--color-code-bg) 100%
+      );
+    }
+    #pg-split[data-layout="side"] #pg-split-handle:hover,
+    #pg-split[data-layout="side"] #pg-split-handle.dragging {
+      background: linear-gradient(
+        to right,
+        var(--color-code-bg) 0%,
+        var(--color-code-bg) 32%,
+        var(--color-accent) 32%,
+        var(--color-accent) 68%,
+        var(--color-code-bg) 68%,
+        var(--color-code-bg) 100%
+      );
     }
   }
 
@@ -489,6 +524,7 @@ const grouped = categories
   // Layout toggle (unchanged from before)
   // ---------------------------------------------------------------------------
   const LAYOUT_KEY = "kex-playground-layout";
+  const SPLIT_RATIO_KEY = "kex-playground-split-ratio";
   type Layout = "stacked" | "side";
   function loadLayoutPref(): Layout {
     try {
@@ -509,6 +545,9 @@ const grouped = categories
     layoutBtns.forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.layoutBtn === layout)),
     );
+    // Re-apply the split ratio: the inline style only matters in side mode;
+    // clearing it in stacked mode lets the CSS `1fr` take over.
+    applySplitRatio(loadSplitRatio());
   }
   layoutBtns.forEach((b) =>
     b.addEventListener("click", () => {
@@ -518,6 +557,58 @@ const grouped = categories
     }),
   );
   applyLayout(loadLayoutPref());
+
+  // ---------------------------------------------------------------------------
+  // Split ratio (side-by-side): drag handle to resize. Persisted in
+  // localStorage. Inline gridTemplateColumns only in side mode — clearing it
+  // in stacked mode avoids a spurious gap between panes.
+  // ---------------------------------------------------------------------------
+  const handleEl = document.getElementById("pg-split-handle") as HTMLElement;
+  let splitDrag: { initX: number; initRatio: number } | null = null;
+
+  function loadSplitRatio(): number {
+    try {
+      const v = localStorage.getItem(SPLIT_RATIO_KEY);
+      if (v) {
+        const n = parseFloat(v);
+        if (n >= 20 && n <= 80) return n;
+      }
+    } catch {}
+    return 60;
+  }
+  function saveSplitRatio(ratio: number) {
+    try { localStorage.setItem(SPLIT_RATIO_KEY, String(ratio)); } catch {}
+  }
+  function applySplitRatio(ratio: number) {
+    if (splitEl.dataset.layout === "side") {
+      splitEl.style.gridTemplateColumns = `${ratio}fr 8px ${100 - ratio}fr`;
+    } else {
+      splitEl.style.gridTemplateColumns = "";
+    }
+  }
+
+  handleEl.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    const m = splitEl.style.gridTemplateColumns.match(/^([\d.]+)fr/);
+    splitDrag = { initX: e.clientX, initRatio: m ? parseFloat(m[1]!) : 50 };
+    handleEl.classList.add("dragging");
+    document.body.style.userSelect = "none";
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!splitDrag) return;
+    const r = splitEl.getBoundingClientRect();
+    const ratio = Math.max(20, Math.min(80,
+      splitDrag.initRatio + ((e.clientX - splitDrag.initX) / r.width) * 100));
+    applySplitRatio(ratio);
+  });
+  document.addEventListener("mouseup", () => {
+    if (!splitDrag) return;
+    const m = splitEl.style.gridTemplateColumns.match(/^([\d.]+)fr/);
+    saveSplitRatio(m ? parseFloat(m[1]!) : 50);
+    splitDrag = null;
+    handleEl.classList.remove("dragging");
+    document.body.style.userSelect = "";
+  });
 
   // ---------------------------------------------------------------------------
   // Tab bar rendering
@@ -628,8 +719,7 @@ const grouped = categories
     const code =
       tab.id === activeTabId && handle ? handle.getValue() : tab.code;
     const isPristineTransient =
-      tab.isTransient &&
-      (code.trim().length === 0 || code === STARTER_CODE);
+      tab.isTransient && (code.trim().length === 0 || code === STARTER_CODE);
     if (!isPristineTransient) {
       const verb = tab.isTransient ? "Discard" : "Delete";
       const name = tab.name || "this program";
