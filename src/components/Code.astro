@@ -24,8 +24,13 @@ interface Props {
    * playground via a share-style URL. Pass the *runnable* program — usually
    * the matching Example's `fullCode`, not the trimmed snippet shown here —
    * so the playground opens with something that actually evaluates.
+   *
+   * Accepts either a bare string (code only) or `{ code, name }` to also
+   * embed a filename in the URL — the playground uses it as the tab name
+   * on the receiving side, so example links open as `fact.kex` rather than
+   * the generic "Shared".
    */
-  openInPlayground?: string;
+  openInPlayground?: string | { code: string; name?: string };
 }
 
 const {
@@ -45,9 +50,16 @@ const highlighted = highlightKex(code.replace(/\n$/, ""));
 const hasOutput = typeof output === "string" && output.trim().length > 0;
 const hasTop = bare || !repl;
 const label = file ?? title;
+
+// Normalize the openInPlayground prop into { code, name? } so the link builder
+// only has one shape to deal with. Bare strings still work for back-compat.
+const playgroundTarget =
+  typeof openInPlayground === "string"
+    ? { code: openInPlayground }
+    : openInPlayground;
 const playgroundLink =
-  typeof openInPlayground === "string" && openInPlayground.length > 0
-    ? playgroundHref(openInPlayground)
+  playgroundTarget && playgroundTarget.code.length > 0
+    ? playgroundHref(playgroundTarget.code, playgroundTarget.name)
     : null;
 ---
 

@@ -49,7 +49,10 @@ export interface PlaygroundOptions {
   outputEl: HTMLElement;
   statusEl: HTMLElement;
   initialCode: string;
-  /** Fired (debounced) when the editor's content changes. */
+  /** Fired (debounced) when the editor's content changes due to user input
+     (not programmatic setValue). The page closes over its own active-tab
+     state to decide what to do with the new code — typically: update the
+     active saved program in the store, and always refresh the URL hash. */
   onEdit?: (code: string) => void;
 }
 
@@ -59,25 +62,6 @@ export const STARTER_CODE = `main do
   IO.printLine((1..10).reduce(0, ~(+)))
 end
 `;
-
-const PROSE_STORAGE_KEY = "kex-playground-code";
-
-export function loadSavedCode(): string | null {
-  try {
-    return localStorage.getItem(PROSE_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-export function saveCode(code: string): void {
-  try {
-    localStorage.setItem(PROSE_STORAGE_KEY, code);
-  } catch {
-    // localStorage unavailable (private browsing, quota) — non-fatal, the
-    // URL hash still carries the program for sharing.
-  }
-}
 
 // Matches ANSI CSI sequences (color, cursor moves, etc.) so we can render
 // the interpreter's output as plain text. The wasm REPL emits these to drive

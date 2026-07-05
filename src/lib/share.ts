@@ -1,7 +1,9 @@
 // URL share encoding for the playground — mirrors the TypeScript playground
-// scheme: the program text is lz-string-compressed into a URL-safe payload and
-// stashed after a `#code/` path marker in the hash. A bare `#code/` (empty
-// payload) decodes to "" and is treated as "no shared code" by callers.
+// scheme, plus a filename so shared links carry their name (e.g. `fact.kex`).
+// The program text is lz-string-compressed into a URL-safe payload, the
+// filename is URI-component-encoded, and the two are joined as
+// `#code/<filename>/<payload>`. A bare `#code/<payload>` (no slash) is also
+// accepted on read for backwards compatibility.
 //
 // We use the hash rather than a query string so the value never leaves the
 // client (no server logs, no CDN caching quirks) and a shared link works from
@@ -23,24 +25,53 @@ const LZString: {
 
 const HASH_PREFIX = "#code/";
 
+/** A program decoded from a share URL. `name` is null when the link was
+    generated without a filename (e.g. legacy `#code/<payload>` links). */
+export interface SharedProgram {
+  code: string;
+  name: string | null;
+}
+
 /**
  * Compresses `code` into a URL-safe hash fragment suitable for sharing.
- * Returns the full hash (including the `#code/` prefix).
+ * Pass a `name` to embed a filename — it shows up as the tab name on the
+ * receiving side. Returns the full hash (including the `#code/` prefix).
  */
-export function encodeCodeHash(code: string): string {
-  return HASH_PREFIX + LZString.compressToEncodedURIComponent(code);
+export function encodeCodeHash(code: string, name?: string | null): string {
+  const payload = LZString.compressToEncodedURIComponent(code);
+  if (name && name.length > 0) {
+    return HASH_PREFIX + encodeURIComponent(name) + "/" + payload;
+  }
+  return HASH_PREFIX + payload;
 }
 
 /**
  * Reads a shared program from a hash fragment. Returns `null` if the hash
  * isn't a `#code/...` link or the payload doesn't decode.
+ *
+ * Accepts both `#code/<name>/<payload>` (current) and `#code/<payload>`
+ * (legacy) shapes — lz-string's URI-safe alphabet doesn't include `/`, so
+ * the presence of a slash unambiguously separates the name from the payload.
  */
-export function readCodeFromHash(hash: string): string | null {
+export function readCodeFromHash(hash: string): SharedProgram | null {
   if (!hash.startsWith(HASH_PREFIX)) return null;
-  const compressed = hash.slice(HASH_PREFIX.length);
+  const rest = hash.slice(HASH_PREFIX.length);
+  const slashIdx = rest.indexOf("/");
+  let name: string | null = null;
+  let compressed = rest;
+  if (slashIdx !== -1) {
+    try {
+      name = decodeURIComponent(rest.slice(0, slashIdx));
+    } catch {
+      // Malformed percent-encoding — treat as unnamed.
+      name = null;
+    }
+    compressed = rest.slice(slashIdx + 1);
+  }
   try {
     const decoded = LZString.decompressFromEncodedURIComponent(compressed);
-    return decoded || null;
+    if (!decoded) return null;
+    return { code: decoded, name };
   } catch {
     return null;
   }
@@ -56,11 +87,11 @@ export function replaceHash(hash: string): void {
 }
 
 /**
- * Builds a `/playground#code/<compressed>` href for the given program text.
+ * Builds a `/playground#code/<name>/<compressed>` href for the given program.
  * Safe to call at build time in Astro frontmatter — used by gallery pages and
  * the `Code` component to wire "Open in Playground" links without a runtime
  * round-trip.
  */
-export function playgroundHref(code: string): string {
-  return `/playground${encodeCodeHash(code)}`;
+export function playgroundHref(code: string, name?: string | null): string {
+  return `/playground${encodeCodeHash(code, name)}`;
 }

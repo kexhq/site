@@ -29,6 +29,17 @@ export interface Example {
 }
 
 /**
+ * Picks the `.kex` filename to label a playground tab / share link with.
+ * Prefers the real source basename when there is one; falls back to
+ * `<slug>.kex` for README-sourced examples that don't have a real file.
+ */
+export function exampleFilename(ex: Pick<Example, "slug" | "source">): string {
+  const base = ex.source.split("/").pop() ?? "";
+  if (base.endsWith(".kex")) return base;
+  return `${ex.slug}.kex`;
+}
+
+/**
  * Curated, hand-verified snippets drawn from the Kex examples in the language
  * repo. Most are the whole program; a few are trimmed for gallery readability
  * (with `fullCode` pointing at the runnable source where needed).

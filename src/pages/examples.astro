@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import Code from "~/components/Code.astro";
-import { EXAMPLES } from "~/data/examples";
+import { EXAMPLES, exampleFilename } from "~/data/examples";
 import { repoBlob } from "~/data/site";
 
 const categories = ["Basics", "Types", "Control", "Effects", "DSL"] as const;
@@ -82,7 +82,12 @@ const grouped = categories
                       </a>
                     </div>
                     <div class="lg:col-span-8">
-                      <Code code={ex.code} output={ex.output} file={ex.source} openInPlayground={ex.fullCode ?? ex.code} />
+                      <Code
+                        code={ex.code}
+                        output={ex.output}
+                        file={ex.source}
+                        openInPlayground={{ code: ex.fullCode ?? ex.code, name: exampleFilename(ex) }}
+                      />
                     </div>
                   </div>
                 </article>

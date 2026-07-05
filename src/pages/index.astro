@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import Code from "~/components/Code.astro";
-import { EXAMPLES } from "~/data/examples";
+import { EXAMPLES, exampleFilename } from "~/data/examples";
 import { REPO } from "~/data/site";
 
 const heroExample = EXAMPLES.find((e) => e.slug === "vectors")!;
@@ -100,7 +100,7 @@ const WHY = [
         code={heroExample.code}
         output={heroExample.output}
         file="examples/vectors_advanced.kex"
-        openInPlayground={heroExample.fullCode ?? heroExample.code}
+        openInPlayground={{ code: heroExample.fullCode ?? heroExample.code, name: exampleFilename(heroExample) }}
       />
     </div>
   </section>
@@ -180,7 +180,7 @@ const WHY = [
       code={fizzbuzzExample.code}
       output={fizzbuzzExample.output}
       file="fizzbuzz.kex"
-      openInPlayground={fizzbuzzExample.fullCode ?? fizzbuzzExample.code}
+      openInPlayground={{ code: fizzbuzzExample.fullCode ?? fizzbuzzExample.code, name: exampleFilename(fizzbuzzExample) }}
     />
   </section>
 
@@ -215,7 +215,7 @@ const WHY = [
           code={purityExample.code}
           output={purityExample.output}
           file="purity.kex"
-          openInPlayground={purityExample.fullCode ?? purityExample.code}
+          openInPlayground={{ code: purityExample.fullCode ?? purityExample.code, name: exampleFilename(purityExample) }}
         />
       </div>
     </div>
@@ -245,7 +245,7 @@ const WHY = [
       code={traitExample.code}
       output={traitExample.output}
       file="traits.kex"
-      openInPlayground={traitExample.fullCode ?? traitExample.code}
+      openInPlayground={{ code: traitExample.fullCode ?? traitExample.code, name: exampleFilename(traitExample) }}
     />
   </section>
 
