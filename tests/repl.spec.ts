@@ -228,7 +228,7 @@ test.describe("/repl", () => {
     records: "Records & Result",
     make: "Attaching behavior with make",
     chaining: "Function chaining",
-    effects: "Effects & purity",
+    effects: "Purity",
     "small-project": "A small project",
   };
 

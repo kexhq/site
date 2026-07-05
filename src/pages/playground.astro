@@ -12,7 +12,7 @@ const grouped = categories
 ---
 
 <BaseLayout
-  title="Playground — kex"
+  title="Playground | Kex"
   description="Write, run, and share Kex programs in the browser — a Monaco editor backed by the real wasm interpreter. Examples, run output, and shareable links."
 >
   <section
@@ -141,10 +141,10 @@ const grouped = categories
           stroke-linecap="round"
           stroke-linejoin="round"
           aria-hidden="true"
-          ><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+          ><path
+            d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
           ></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline
-            points="7 3 7 8 15 8"
-          ></polyline></svg
+            points="7 3 7 8 15 8"></polyline></svg
         >
         <span data-save-label>Save as new</span>
       </button>
@@ -185,7 +185,22 @@ const grouped = categories
           class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
           title="Stacked — output below editor"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            ><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line
+              x1="3"
+              y1="12"
+              x2="21"
+              y2="12"></line></svg
+          >
         </button>
         <button
           type="button"
@@ -194,7 +209,22 @@ const grouped = categories
           class="inline-flex h-[34px] w-9 items-center justify-center text-[var(--color-faint)] transition-colors hover:bg-[var(--color-bg-subtle)] aria-pressed:bg-[var(--color-ink)] aria-pressed:text-[var(--color-bg)]"
           title="Side-by-side — output next to editor"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            ><rect x="3" y="4" width="18" height="16" rx="1.5"></rect><line
+              x1="12"
+              y1="4"
+              x2="12"
+              y2="20"></line></svg
+          >
         </button>
       </div>
 
@@ -219,8 +249,8 @@ const grouped = categories
         id="pg-new-tab"
         class="pg-tab-new shrink-0 self-center rounded-md border border-dashed border-[var(--color-line-strong)] px-2.5 py-1 font-mono text-[13px] leading-none text-[var(--color-faint)] transition-colors hover:border-solid hover:text-[var(--color-ink-soft)]"
         title="New program"
-        aria-label="New program"
-      >+</button>
+        aria-label="New program">+</button
+      >
     </div>
 
     <!-- Editor + Output -->
@@ -229,14 +259,14 @@ const grouped = categories
       data-layout="stacked"
       class="grid border border-[var(--color-line)] bg-[var(--color-code-bg)] border-t-0"
     >
-      <div
-        id="pg-editor-pane"
-        class="surface-code relative min-h-[420px]"
-      >
+      <div id="pg-editor-pane" class="surface-code relative min-h-[420px]">
         <div id="pg-editor" class="h-[560px]"></div>
       </div>
 
-      <div id="pg-output-pane" class="surface-code relative min-h-[300px] flex flex-col">
+      <div
+        id="pg-output-pane"
+        class="surface-code relative min-h-[300px] flex flex-col"
+      >
         <div
           class="flex items-center justify-between border-b border-[var(--color-code-border)] px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#6b6b80]"
         >
@@ -281,10 +311,16 @@ const grouped = categories
   /* Layout: default is stacked (editor on top, output below).
      `data-layout="side"` puts them side-by-side on large screens; mobile
      always stacks since there's no room for two columns. */
-  #pg-split { grid-template-columns: 1fr; }
-  #pg-editor-pane { border-bottom: 1px solid var(--color-code-border); }
+  #pg-split {
+    grid-template-columns: 1fr;
+  }
+  #pg-editor-pane {
+    border-bottom: 1px solid var(--color-code-border);
+  }
   @media (min-width: 1024px) {
-    #pg-split[data-layout="side"] { grid-template-columns: 1fr 1fr; }
+    #pg-split[data-layout="side"] {
+      grid-template-columns: 1fr 1fr;
+    }
     #pg-split[data-layout="side"] #pg-editor-pane {
       border-bottom: 0;
       border-right: 1px solid var(--color-code-border);
@@ -313,7 +349,9 @@ const grouped = categories
     max-width: 220px;
     flex-shrink: 0;
   }
-  .pg-tab:hover { background: var(--color-bg-muted); }
+  .pg-tab:hover {
+    background: var(--color-bg-muted);
+  }
   .pg-tab[aria-selected="true"] {
     background: var(--color-code-bg);
     color: #e9e0cf;
@@ -331,7 +369,9 @@ const grouped = categories
   .pg-tab[data-transient="true"][aria-selected="true"]::before {
     color: #f0c987;
   }
-  .pg-tab[data-transient="true"] .pg-tab-name { font-style: italic; }
+  .pg-tab[data-transient="true"] .pg-tab-name {
+    font-style: italic;
+  }
 
   .pg-tab-name {
     white-space: nowrap;
@@ -365,7 +405,9 @@ const grouped = categories
     cursor: pointer;
     padding: 0;
   }
-  .pg-tab-close:hover { opacity: 1; }
+  .pg-tab-close:hover {
+    opacity: 1;
+  }
 </style>
 
 <script>
@@ -419,10 +461,10 @@ const grouped = categories
   // instant and per-tab output works (per the locked-in design).
   // ---------------------------------------------------------------------------
   interface Tab {
-    id: string;          // store id, or `transient:N` for unsaved tabs
+    id: string; // store id, or `transient:N` for unsaved tabs
     name: string;
     isTransient: boolean;
-    code: string;        // snapshot swapped in/out on tab switch
+    code: string; // snapshot swapped in/out on tab switch
     output: { text: string; state: string };
   }
   let tabs: Tab[] = [];
@@ -438,9 +480,7 @@ const grouped = categories
 
   /** Picks the next "Untitled" / "Untitled N" name based on existing tabs. */
   function nextUntitledName(): string {
-    const matching = tabs.filter((t) =>
-      /^Untitled(\s\d+)?$/.test(t.name),
-    );
+    const matching = tabs.filter((t) => /^Untitled(\s\d+)?$/.test(t.name));
     if (matching.length === 0) return "Untitled";
     return `Untitled ${matching.length + 1}`;
   }
@@ -467,10 +507,7 @@ const grouped = categories
   function applyLayout(layout: Layout) {
     splitEl.dataset.layout = layout;
     layoutBtns.forEach((b) =>
-      b.setAttribute(
-        "aria-pressed",
-        String(b.dataset.layoutBtn === layout),
-      ),
+      b.setAttribute("aria-pressed", String(b.dataset.layoutBtn === layout)),
     );
   }
   layoutBtns.forEach((b) =>
@@ -586,7 +623,8 @@ const grouped = categories
 
     // Confirm for non-empty content. "Empty" = the buffer is whitespace only
     // OR identical to its starting point (starter / pristine example).
-    const code = tab.id === activeTabId && handle ? handle.getValue() : tab.code;
+    const code =
+      tab.id === activeTabId && handle ? handle.getValue() : tab.code;
     const isEmpty = code.trim().length === 0 || code === STARTER_CODE;
     if (!isEmpty) {
       const verb = tab.isTransient ? "Discard" : "Delete";
@@ -638,9 +676,9 @@ const grouped = categories
     const code = handle.getValue();
     const source = activeTab();
     const name = source
-      ? (source.isTransient
-          ? source.name
-          : `${source.name} copy`)
+      ? source.isTransient
+        ? source.name
+        : `${source.name} copy`
       : nextUntitledName();
     const { program } = createProgram(name, code);
 

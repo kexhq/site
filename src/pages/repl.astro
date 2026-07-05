@@ -8,7 +8,7 @@ import PatternMatching from "~/components/lessons/PatternMatching.astro";
 import Records from "~/components/lessons/Records.astro";
 import Make from "~/components/lessons/Make.astro";
 import Chaining from "~/components/lessons/Chaining.astro";
-import Effects from "~/components/lessons/Effects.astro";
+import Purity from "~/components/lessons/Purity.astro";
 import SmallProject from "~/components/lessons/SmallProject.astro";
 
 const LESSON_COMPONENTS: Record<string, any> = {
@@ -19,7 +19,7 @@ const LESSON_COMPONENTS: Record<string, any> = {
   records: Records,
   make: Make,
   chaining: Chaining,
-  effects: Effects,
+  purity: Purity,
   "small-project": SmallProject,
 };
 
@@ -28,7 +28,7 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
 ---
 
 <BaseLayout
-  title="REPL — kex"
+  title="REPL | Kex"
   description="A live, in-browser kex REPL — the same tree-walk interpreter as the CLI, compiled to WebAssembly. Follow the tutorial alongside it, or just start typing."
 >
   <section
