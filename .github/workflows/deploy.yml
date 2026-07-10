@@ -29,7 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
-          # See .github/workflows/test.yml for why this is needed.
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build with Astro
         run: npm run build
