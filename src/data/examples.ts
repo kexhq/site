@@ -151,7 +151,7 @@ end`,
     (0, 0) -> "FizzBuzz"
     (0, _) -> "Fizz"
     (_, 0) -> "Buzz"
-    (_, _) -> n.to(String)
+    (_, _) -> n.to(String).or("")
   end
 end
 
@@ -307,7 +307,7 @@ end`,
   list.filter!(&.even?)     # list = [2, 4, 6]
   list.map! { |x| x * 10 }  # list = [20, 40, 60]
 
-  IO.printLine(list.to(String))
+  IO.printLine(list.to(String).or(""))
 end`,
     // The repo's mutating.kex has more (countErrors, an accumulator Process)
     // below this point; the trimmed main above is the runnable core.
