@@ -167,8 +167,6 @@ export async function mountRepl(
   };
 
   onStatus?.("loading");
-  term.writeln("kex — interactive REPL (wasm, in-browser)");
-  term.writeln("");
 
   // The wasm build's underlying read() syscall pulls a large fixed-size
   // chunk (looks like 1024 bytes) per call, looping its `stdin` callback
@@ -207,6 +205,7 @@ export async function mountRepl(
     // above) so Vite doesn't rewrite this into a `?import`-suffixed request.
     const { Kex } = await nativeImport("/kex-repl/index.mjs");
     session = await Kex.create({ stdin });
+    term.write(session.banner());
   } catch (err) {
     onStatus?.("error");
     term.writeln("\x1b[31mfailed to load the kex interpreter.\x1b[0m");
