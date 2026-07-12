@@ -205,7 +205,7 @@ export async function mountRepl(
     // above) so Vite doesn't rewrite this into a `?import`-suffixed request.
     const { Kex } = await nativeImport("/kex-repl/index.mjs");
     session = await Kex.create({ stdin });
-    term.write(session.banner());
+    term.write(session.banner().replace(/\n/g, "\r\n"));
   } catch (err) {
     onStatus?.("error");
     term.writeln("\x1b[31mfailed to load the kex interpreter.\x1b[0m");
