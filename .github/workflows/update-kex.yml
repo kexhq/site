@@ -25,9 +25,13 @@ jobs:
       - name: Resolve latest version
         id: latest
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          latest=$(npm view @kexhq/kex version)
+          # @kexhq/kex ships as 0.0.0-dev.<sha> builds with no `latest` dist-tag,
+          # so `npm view ... version` resolves to "". The packages API lists
+          # versions newest-first, so [0] is the most recently published.
+          latest=$(gh api /orgs/kexhq/packages/npm/kex/versions --jq '.[0].name')
+          [ -n "$latest" ] || { echo "error: could not resolve latest @kexhq/kex version"; exit 1; }
           current=$(node -p "require('./package.json').dependencies['@kexhq/kex']")
           {
             echo "latest=$latest"
