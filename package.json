@@ -18,7 +18,7 @@
   "dependencies": {
     "@astrojs/check": "0.9.9",
     "@astrojs/sitemap": "3.7.3",
-    "@kexhq/kex": "0.0.0-dev.f81f210",
+    "@kexhq/kex": "^0.0.0-dev.41e48e8",
     "@tailwindcss/vite": "4.3.2",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/xterm": "6.0.0",
