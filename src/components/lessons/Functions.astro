@@ -63,4 +63,11 @@ fact(4)`}
   It's common enough that you'll see it in almost every chain.
 </p>
 
-<Code code={`[1, 2, 3].map(&.to(String))`} repl />
+<Code code={`[1, 2, 3].map(&.to(String).or(""))`} repl />
+
+<p>
+  <code>.to(String)</code> converts each number to a string. Conversions can
+  fail, so it returns an <code>Option</code> &mdash; <code>Just(value)</code> on
+  success or <code>None</code> otherwise &mdash; and <code>.or("")</code>
+  unwraps it, substituting the default when there's no value.
+</p>
