@@ -63,7 +63,10 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
   </section>
 
   <section class="container-page py-12">
-    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+    <div
+      id="repl-layout"
+      class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10"
+    >
       <!-- LEFT: the live REPL terminal -->
       <div>
         <div
@@ -111,6 +114,72 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
               >
                 loading…
               </span>
+              <button
+                type="button"
+                id="repl-reset"
+                class="repl-chrome-btn"
+                aria-label="Reset REPL"
+                title="Reset REPL — fresh session, clear screen"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  ><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path
+                    d="M21 3v5h-5"
+                  ></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path
+                    d="M3 21v-5h5"
+                  ></path></svg
+                >
+              </button>
+              <button
+                type="button"
+                id="repl-expand"
+                class="repl-chrome-btn hidden lg:inline-flex"
+                aria-label="Expand REPL"
+                title="Expand REPL"
+              >
+                <svg
+                  class="icon-expand"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  ><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path
+                    d="M21 8V5a2 2 0 0 0-2-2h-3"
+                  ></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path
+                    d="M16 21h3a2 2 0 0 0 2-2v-3"
+                  ></path></svg
+                >
+                <svg
+                  class="icon-collapse"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  ><path d="M8 3v3a2 2 0 0 1-2 2H3"></path><path
+                    d="M21 8h-3a2 2 0 0 1-2-2V3"
+                  ></path><path d="M3 16h3a2 2 0 0 1 2 2v3"></path><path
+                    d="M16 21v-3a2 2 0 0 1 2-2h3"
+                  ></path></svg
+                >
+              </button>
             </div>
           </div>
           <div id="repl-terminal" class="h-[520px] px-2 py-2"></div>
@@ -358,12 +427,68 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     opacity: 0.35;
     cursor: default;
   }
+
+  /* Standalone icon buttons in the terminal chrome (reset, expand). */
+  .repl-chrome-btn {
+    color: #8a8aa0;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    width: 1.75rem;
+    height: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .repl-chrome-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    color: #d6d6e6;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .repl-chrome-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  /* Expand/collapse icons swap based on the toggle state. */
+  #repl-expand .icon-collapse {
+    display: none;
+  }
+  #repl-expand.is-expanded .icon-expand {
+    display: none;
+  }
+  #repl-expand.is-expanded .icon-collapse {
+    display: inline-flex;
+  }
+
+  /* "Wide" mode: the REPL takes the full row and the tutorial drops below
+     it, giving the terminal much more room (desktop only — below lg the
+     grid is already single-column). Overrides the lg Tailwind utilities via
+     id specificity. */
+  @media (min-width: 1024px) {
+    #repl-layout.repl-wide {
+      grid-template-columns: 1fr;
+    }
+    #repl-layout.repl-wide > aside {
+      position: static;
+    }
+    #repl-layout.repl-wide #repl-terminal {
+      height: clamp(620px, 80vh, 880px);
+    }
+  }
 </style>
 
 <script>
   import {
     mountRepl,
     type ReplHandle,
+    type ReplStatus,
+    type ReplMountOptions,
     DEFAULT_REPL_FONT_SIZE,
     REPL_FONT_SIZE_MIN,
     REPL_FONT_SIZE_MAX,
@@ -436,19 +561,23 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     if (fontIncBtn) fontIncBtn.disabled = size >= REPL_FONT_SIZE_MAX;
   };
 
+  const onStatus = (status: ReplStatus) => {
+    if (!statusEl) return;
+    if (status === "ready") statusEl.textContent = "ready";
+    else if (status === "error")
+      statusEl.textContent = "failed to load — reset to retry";
+    else statusEl.textContent = "loading…";
+  };
+
+  const mountOptions: ReplMountOptions = {
+    onStatus,
+    onFontSize: syncFontControls,
+  };
+
   if (container) {
     let handle: ReplHandle | undefined;
 
-    mountRepl(container, {
-      onStatus(status) {
-        if (!statusEl) return;
-        if (status === "ready") statusEl.textContent = "ready";
-        else if (status === "error")
-          statusEl.textContent = "failed to load — reload to retry";
-        else statusEl.textContent = "loading…";
-      },
-      onFontSize: syncFontControls,
-    }).then((h) => {
+    mountRepl(container, mountOptions).then((h) => {
       handle = h;
     });
 
@@ -468,5 +597,34 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     ) => {
       handle?.pasteText(e.detail.code);
     }) as EventListener);
+
+    // Hard reset: tear down the current session + terminal and mount a fresh
+    // one. Re-mounting (rather than an in-place session swap) also gives a
+    // clean retry path when the wasm failed to load, and history/font-size
+    // persist via localStorage so nothing else is lost.
+    const resetBtn = document.querySelector<HTMLButtonElement>("#repl-reset");
+    resetBtn?.addEventListener("click", async () => {
+      if (resetBtn) resetBtn.disabled = true;
+      handle?.destroy();
+      handle = undefined;
+      container.innerHTML = "";
+      try {
+        handle = await mountRepl(container, mountOptions);
+      } finally {
+        if (resetBtn) resetBtn.disabled = false;
+      }
+    });
+
+    // Expand/collapse: drop the tutorial below the terminal and let the
+    // terminal grow, then tell xterm to re-fit the new container size.
+    const expandBtn = document.querySelector<HTMLButtonElement>("#repl-expand");
+    const layout = document.getElementById("repl-layout");
+    expandBtn?.addEventListener("click", () => {
+      const wide = layout?.classList.toggle("repl-wide") ?? false;
+      expandBtn.classList.toggle("is-expanded", wide);
+      expandBtn.setAttribute("aria-label", wide ? "Collapse REPL" : "Expand REPL");
+      expandBtn.title = wide ? "Collapse REPL" : "Expand REPL";
+      requestAnimationFrame(() => handle?.fit());
+    });
   }
 </script>

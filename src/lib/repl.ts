@@ -37,6 +37,8 @@ export interface ReplHandle {
   pasteText(text: string): Promise<void>;
   /** Live-adjusts the terminal font size (clamped, persisted in-browser). */
   setFontSize(size: number): void;
+  /** Re-measures the terminal against its container size (call after resize). */
+  fit(): void;
 }
 
 export interface ReplMountOptions {
@@ -314,6 +316,7 @@ export async function mountRepl(
         // wasm never loaded — nothing to paste into.
       },
       setFontSize: applyFontSize,
+      fit: () => fitAddon.fit(),
     };
   }
 
@@ -506,5 +509,5 @@ export async function mountRepl(
 
   window.addEventListener("pagehide", destroy, { once: true });
 
-  return { destroy, pasteText, setFontSize: applyFontSize };
+  return { destroy, pasteText, setFontSize: applyFontSize, fit: () => fitAddon.fit() };
 }
