@@ -35,11 +35,43 @@ export interface ReplHandle {
    * samples. Scrolls/focuses the terminal so the result is visible.
    */
   pasteText(text: string): Promise<void>;
+  /** Live-adjusts the terminal font size (clamped, persisted in-browser). */
+  setFontSize(size: number): void;
+}
+
+export interface ReplMountOptions {
+  onStatus?: (status: ReplStatus) => void;
+  /** Notified with the current font size on mount and whenever it changes. */
+  onFontSize?: (size: number) => void;
 }
 
 const PROMPT = "kex> ";
 const CONT_PROMPT = "...> ";
 const HISTORY_KEY = "kex-repl-history";
+const FONT_SIZE_KEY = "kex-repl-font-size";
+
+// Default font size tuned for the current REPL density (banner + tutorial
+// output + prompt history all share the viewport now). Exposed so the page
+// can drive its own +/- controls and disable them at the bounds.
+export const DEFAULT_REPL_FONT_SIZE = 14;
+export const REPL_FONT_SIZE_MIN = 8;
+export const REPL_FONT_SIZE_MAX = 32;
+
+function loadFontSize(): number {
+  try {
+    const stored = Number(localStorage.getItem(FONT_SIZE_KEY));
+    if (
+      Number.isFinite(stored) &&
+      stored >= REPL_FONT_SIZE_MIN &&
+      stored <= REPL_FONT_SIZE_MAX
+    ) {
+      return Math.round(stored);
+    }
+  } catch {
+    // localStorage unavailable (private browsing etc.) — fall back to default.
+  }
+  return DEFAULT_REPL_FONT_SIZE;
+}
 
 // Straight port of the native REPL's `countBlocks` (see main.cxx / the
 // reference web/index.html) — counts unmatched `do`/`end` keywords at word
@@ -109,8 +141,12 @@ function stripSharedQualifierForDisplay(matches: string[], lcp: string): string[
 
 export async function mountRepl(
   container: HTMLElement,
-  onStatus?: (status: ReplStatus) => void,
+  options: ReplMountOptions = {},
 ): Promise<ReplHandle> {
+  const { onStatus, onFontSize } = options;
+
+  let fontSize = loadFontSize();
+
   const [{ Terminal }, { FitAddon }] = await Promise.all([
     import("@xterm/xterm"),
     import("@xterm/addon-fit"),
@@ -118,7 +154,7 @@ export async function mountRepl(
 
   const term: TerminalType = new Terminal({
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-    fontSize: 20,
+    fontSize,
     cursorBlink: true,
     theme: { background: "#1b140a", foreground: "#d6d6e6" },
   });
@@ -128,6 +164,50 @@ export async function mountRepl(
   fitAddon.fit();
   const onResize = () => fitAddon.fit();
   window.addEventListener("resize", onResize);
+
+  // Clamps, persists (best-effort), re-fits the terminal to the new cell
+  // metrics, and notifies the UI. No-op when the clamped value is unchanged
+  // so holding the shortcut key at a bound doesn't churn.
+  function applyFontSize(size: number) {
+    const clamped = Math.max(
+      REPL_FONT_SIZE_MIN,
+      Math.min(REPL_FONT_SIZE_MAX, Math.round(size)),
+    );
+    if (clamped === fontSize) return;
+    fontSize = clamped;
+    term.options.fontSize = clamped;
+    try {
+      localStorage.setItem(FONT_SIZE_KEY, String(clamped));
+    } catch {
+      // localStorage unavailable — size just won't persist across reloads.
+    }
+    fitAddon.fit();
+    onFontSize?.(clamped);
+  }
+
+  // Browser-style zoom shortcuts while the terminal has focus: Cmd/Ctrl
+  // +/-/0 grow, shrink, and reset the font size. Returning false hands the
+  // keystroke to our handler instead of the browser's page zoom.
+  term.attachCustomKeyEventHandler((e: KeyboardEvent): boolean => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (!mod) return true;
+    if (e.key === "+" || e.key === "=") {
+      applyFontSize(fontSize + 1);
+      return false;
+    }
+    if (e.key === "-" || e.key === "_") {
+      applyFontSize(fontSize - 1);
+      return false;
+    }
+    if (e.key === "0") {
+      applyFontSize(DEFAULT_REPL_FONT_SIZE);
+      return false;
+    }
+    return true;
+  });
+
+  // Sync the host UI with whatever was restored (or the default) up front.
+  onFontSize?.(fontSize);
 
   let history: string[] = [];
   try {
@@ -155,9 +235,24 @@ export async function mountRepl(
   const writePrompt = () => term.write(prompt);
 
   const redrawLine = () => {
-    term.write("\r\x1b[K" + prompt + line);
+    // One write, not two: xterm parses writes asynchronously in chunks, so a
+    // separate "move cursor back" call would render the cursor at the line's
+    // end for a frame before snapping back (very visible on big word-jumps).
+    // Bundling the erase/rewrite/reposition into a single string lets it all
+    // land in one paint.
     const back = line.length - cursor;
-    if (back > 0) term.write(`\x1b[${back}D`);
+    term.write("\r\x1b[K" + prompt + line + (back > 0 ? `\x1b[${back}D` : ""));
+  };
+
+  // Moves the terminal cursor without rewriting any text — used for keystrokes
+  // that only change the caret position (arrows, word-jumps, Home/End). Since
+  // nothing is rewritten there's no flash at all. Assumes the line fits within
+  // the current row (same assumption redrawLine's back-move already makes).
+  const moveCursor = (to: number) => {
+    const delta = to - cursor;
+    if (delta > 0) term.write(`\x1b[${delta}C`);
+    else if (delta < 0) term.write(`\x1b[${-delta}D`);
+    cursor = to;
   };
 
   const setLine = (s: string) => {
@@ -218,6 +313,7 @@ export async function mountRepl(
       async pasteText() {
         // wasm never loaded — nothing to paste into.
       },
+      setFontSize: applyFontSize,
     };
   }
 
@@ -306,12 +402,10 @@ export async function mountRepl(
         writePrompt();
         return;
       case "\x01":
-        cursor = 0;
-        redrawLine();
+        moveCursor(0);
         return;
       case "\x05":
-        cursor = line.length;
-        redrawLine();
+        moveCursor(line.length);
         return;
       case "\x0b":
         line = line.slice(0, cursor);
@@ -332,6 +426,19 @@ export async function mountRepl(
         redrawLine();
         return;
       }
+      case "\x1b\x7f": // Option/Alt+Backspace — backward-kill-word
+      case "\x1b\b": {
+        // Same word definition as Option+Left (prevWordStart), so delete and
+        // jump agree on where a "word" starts. Unlike Ctrl+W above, which is
+        // the shell-style whitespace-only rubout.
+        const start = prevWordStart(line, cursor);
+        if (start < cursor) {
+          line = line.slice(0, start) + line.slice(cursor);
+          cursor = start;
+          redrawLine();
+        }
+        return;
+      }
       case "\x1b[A":
         if (historyPos > 0) {
           if (historyPos === history.length) draft = line;
@@ -346,36 +453,26 @@ export async function mountRepl(
         }
         return;
       case "\x1b[C":
-        if (cursor < line.length) {
-          cursor++;
-          redrawLine();
-        }
+        if (cursor < line.length) moveCursor(cursor + 1);
         return;
       case "\x1b[D":
-        if (cursor > 0) {
-          cursor--;
-          redrawLine();
-        }
+        if (cursor > 0) moveCursor(cursor - 1);
         return;
       case "\x1b[1;3D": // Option/Alt+Left
       case "\x1b[1;5D": // Ctrl+Left
-        cursor = prevWordStart(line, cursor);
-        redrawLine();
+        moveCursor(prevWordStart(line, cursor));
         return;
       case "\x1b[1;3C": // Option/Alt+Right
       case "\x1b[1;5C": // Ctrl+Right
-        cursor = nextWordEnd(line, cursor);
-        redrawLine();
+        moveCursor(nextWordEnd(line, cursor));
         return;
       case "\x1b[H":
       case "\x1b[1~":
-        cursor = 0;
-        redrawLine();
+        moveCursor(0);
         return;
       case "\x1b[F":
       case "\x1b[4~":
-        cursor = line.length;
-        redrawLine();
+        moveCursor(line.length);
         return;
     }
     if (data >= " ") {
@@ -409,5 +506,5 @@ export async function mountRepl(
 
   window.addEventListener("pagehide", destroy, { once: true });
 
-  return { destroy, pasteText };
+  return { destroy, pasteText, setFontSize: applyFontSize };
 }

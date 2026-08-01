@@ -78,12 +78,40 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
             <span class="ml-2 font-mono text-[12px] text-[#8a8aa0]"
               >kex repl — wasm</span
             >
-            <span
-              id="repl-status"
-              class="ml-auto rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10.5px] text-[#6b6b80]"
-            >
-              loading…
-            </span>
+            <div class="ml-auto flex items-center gap-2.5">
+              <div
+                class="flex items-center rounded-md border border-white/10"
+                title="Font size (Ctrl/Cmd ± / 0)"
+              >
+                <button
+                  type="button"
+                  data-font-dec
+                  class="repl-font-btn"
+                  aria-label="Decrease font size"
+                >
+                  −</button
+                >
+                <span
+                  data-font-size
+                  class="min-w-[1.75rem] text-center font-mono text-[11px] text-[#8a8aa0]"
+                  aria-live="polite"
+                  >14</span
+                >
+                <button
+                  type="button"
+                  data-font-inc
+                  class="repl-font-btn"
+                  aria-label="Increase font size"
+                  >+</button
+                >
+              </div>
+              <span
+                id="repl-status"
+                class="rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10.5px] text-[#6b6b80]"
+              >
+                loading…
+              </span>
+            </div>
           </div>
           <div id="repl-terminal" class="h-[520px] px-2 py-2"></div>
         </div>
@@ -302,10 +330,44 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
     opacity: 0.4;
     cursor: default;
   }
+
+  .repl-font-btn {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: #8a8aa0;
+    background: none;
+    border: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .repl-font-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    color: #d6d6e6;
+  }
+  .repl-font-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
 </style>
 
 <script>
-  import { mountRepl, type ReplHandle } from "~/lib/repl";
+  import {
+    mountRepl,
+    type ReplHandle,
+    DEFAULT_REPL_FONT_SIZE,
+    REPL_FONT_SIZE_MIN,
+    REPL_FONT_SIZE_MAX,
+  } from "~/lib/repl";
 
   const panels = Array.from(
     document.querySelectorAll<HTMLElement>("[data-lesson-panel]"),
@@ -361,18 +423,45 @@ const lessons = TUTORIAL_NAV.flatMap((s) => s.entries);
   const container = document.getElementById("repl-terminal");
   const statusEl = document.getElementById("repl-status");
 
+  // Font-size controls: +/- buttons in the terminal chrome plus the live
+  // readout. Buttons disable at the clamped bounds so it's clear when you've
+  // hit the limit. The actual value persists in-browser (see repl.ts).
+  const fontDecBtn = document.querySelector<HTMLButtonElement>("[data-font-dec]");
+  const fontIncBtn = document.querySelector<HTMLButtonElement>("[data-font-inc]");
+  const fontSizeEl = document.querySelector<HTMLElement>("[data-font-size]");
+
+  const syncFontControls = (size: number) => {
+    if (fontSizeEl) fontSizeEl.textContent = String(size);
+    if (fontDecBtn) fontDecBtn.disabled = size <= REPL_FONT_SIZE_MIN;
+    if (fontIncBtn) fontIncBtn.disabled = size >= REPL_FONT_SIZE_MAX;
+  };
+
   if (container) {
     let handle: ReplHandle | undefined;
 
-    mountRepl(container, (status) => {
-      if (!statusEl) return;
-      if (status === "ready") statusEl.textContent = "ready";
-      else if (status === "error")
-        statusEl.textContent = "failed to load — reload to retry";
-      else statusEl.textContent = "loading…";
+    mountRepl(container, {
+      onStatus(status) {
+        if (!statusEl) return;
+        if (status === "ready") statusEl.textContent = "ready";
+        else if (status === "error")
+          statusEl.textContent = "failed to load — reload to retry";
+        else statusEl.textContent = "loading…";
+      },
+      onFontSize: syncFontControls,
     }).then((h) => {
       handle = h;
     });
+
+    fontDecBtn?.addEventListener("click", () =>
+      handle?.setFontSize(
+        Number(fontSizeEl?.textContent ?? DEFAULT_REPL_FONT_SIZE) - 1,
+      ),
+    );
+    fontIncBtn?.addEventListener("click", () =>
+      handle?.setFontSize(
+        Number(fontSizeEl?.textContent ?? DEFAULT_REPL_FONT_SIZE) + 1,
+      ),
+    );
 
     document.addEventListener("kex-repl:paste", ((
       e: CustomEvent<{ code: string }>,
