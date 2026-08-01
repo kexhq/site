@@ -44,9 +44,11 @@ import Code from "~/components/Code.astro";
             ["== !=", "equality"],
             ["< > <= >=", "comparison"],
             ["&& ||", "boolean logic"],
-            ["&", "function / method reference"],
-            ["~", "partial application"],
+            ["&.", "receiver shorthand (&.method)"],
+            ["~", "capture / partial application (~f, ~(+))"],
+            ["...", "spread into a list or map"],
             ["..", "range (1..10)"],
+            ["!", "mutating call on a var (list.push!(4))"],
             ["@", "@field shorthand in make"],
           ].map(([op, desc]) => (
             <tr class="border-t border-[var(--color-line)]">
