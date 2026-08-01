@@ -42,7 +42,7 @@ let factorial(n: Integer) = n * factorial(n - 1)`}
   .take(20)
 
 # exactly equivalent:
-map(requests, &normalize)`}
+map(requests, ~normalize)`}
     file="ufcs.kex"
     source="examples/ufcs.kex"
   />
@@ -52,21 +52,25 @@ map(requests, &normalize)`}
     code={`let inc = { |x| x + 1 }
 let add = { |a, b| a + b }
 
-[1, 2, 3].map(&inc)         # [2, 3, 4]
+[1, 2, 3].map(~inc)         # [2, 3, 4]
 [1, 2, 3].map(&.to(String)) # method reference via &.`}
     file="lambdas.kex"
     source="examples/lambdas.kex"
   />
 
-  <h2>Currying and partial application</h2>
+  <h2>Capturing, currying and partial application</h2>
   <p>
-    <code>~func(args)</code> builds a partial application. Bound arguments fill left
-    to right; <code>_</code> marks an explicit open slot. Once enough arguments arrive
-    to fully saturate, the function runs immediately.
+    <code>~func</code> captures a function as a value — on its own, <code
+      >~f</code
+    > is just <code>f</code>. Each trailing <code>(args)</code> group partially applies
+    it: bound arguments fill left to right, and <code>_</code> marks an explicit open
+    slot. Once enough arguments arrive to fully saturate, the function runs immediately.
   </p>
   <Code
     code={`let add(a, b) = a + b
 let multiply(a, b) = a * b
+
+[1, 2, 3, 4].filter(~even?)       # plain capture — no argument group
 
 let inc    = ~add(1)              # {|b| add(1, b)}
 let double = ~multiply(2)         # {|b| multiply(2, b)}
@@ -79,6 +83,25 @@ sub5(20)                          # 15`}
     file="curry.kex"
     source="examples/curry.kex"
   />
+  <p>
+    Every binary operator can be captured with <code>~(op)</code>, plus <code
+      >~(!)</code
+    > for negation. <code>~(&amp;&amp;)</code> and <code>~(||)</code> are ordinary
+    functions, so they evaluate both arguments rather than short-circuiting. The captured
+    name may also be module-qualified, to any depth.
+  </p>
+  <Code
+    code={`flags.map(~(!))                   # {|b| !b}
+
+["a", "b"].each(~IO.printLine)
+["x", "y"].map(~String.upperCase)
+words.map(~Outer.Inner.Deep.shout)`}
+  />
+  <p>
+    Capturing is always spelled with <code>~</code>. <code>&amp;</code> is receiver
+    shorthand only, as in <code>&amp;.method</code> — <code>&amp;func</code> and
+    <code>&amp;.+</code> are not valid syntax.
+  </p>
 
   <h2>Type-directed <code>make</code></h2>
   <p>

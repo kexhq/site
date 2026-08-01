@@ -35,6 +35,16 @@ list.push!(4)             # list := list.push(4)`}
     file="bindings.kex"
     source="examples/bindings.kex"
   />
+  <p>
+    A binding may carry a type annotation. Inference covers most code, so an
+    annotation is for when you want to pin the type down rather than discover
+    it.
+  </p>
+  <Code
+    code={`let count : Integer = 3
+var total : Float = 0.0
+foul config : [String] = FS.File.lines("app.conf").or([])`}
+  />
 
   <h2>Functions</h2>
   <p>
@@ -74,6 +84,33 @@ end
 let p = Point { x: 1.0, y: 2.0 }`}
     file="point.kex"
     source="examples/point.kex"
+  />
+  <p>
+    A bare field name is shorthand for <code>name: name</code>, mirroring how
+    record patterns destructure with <code>{"{ x, y }"}</code>. The two forms mix
+    freely.
+  </p>
+  <Code
+    code={`let x = 1.0
+let y = 2.0
+
+let p = Point { x, y }         # Point { x: x, y: y }
+let q = Point { x, y: 5.0 }`}
+  />
+
+  <h2>Spread</h2>
+  <p>
+    <code>...</code> splices a collection into the one being built. It is a
+    spread, not an operator — it is only valid inside a list or map literal, or
+    as a statement in a <code>do</code> block body. In a map, later entries win,
+    so a spread overrides what precedes it and is overridden by what follows.
+  </p>
+  <Code
+    code={`let xs = [1, 2]
+[0, ...xs, 5]                  # [0, 1, 2, 5]
+
+let base = { "host": "localhost", "port": 80 }
+{ ...base, "port": 8080 }      # port becomes 8080`}
   />
 
   <h2>Control flow</h2>
