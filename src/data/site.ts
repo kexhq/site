@@ -21,7 +21,7 @@ export const repoBlob = (path: string) =>
  * Safety net if the GitHub API is unreachable at build time. Bump this when
  * cutting a release so even a fully offline build stays truthful.
  */
-const LATEST_RELEASE_FALLBACK = "v0.3.0";
+const LATEST_RELEASE_FALLBACK = "v0.3.1";
 
 /**
  * The latest published Kex release, read from GitHub at build time so the
