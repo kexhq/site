@@ -1,0 +1,64 @@
+---
+/**
+ * Keeps the release number on the page current without a rebuild.
+ *
+ * `latestRelease()` in ~/data/site reads the tag when the site BUILDS, which
+ * is right for the initial paint — it needs no JavaScript, no request, and no
+ * layout shift — but wrong the moment kexhq/kex publishes and nothing pushes
+ * here. That is how kex.run went on advertising v0.3.0 after v0.3.1 shipped.
+ *
+ * So the build-time tag is the default, and this re-asks the API in the
+ * visitor's browser and patches it if the answer differs. Every element the
+ * tag appears in is marked, rather than the number being re-templated:
+ *
+ *   data-release-tag  — textContent becomes the tag
+ *   data-release-url  — href becomes the release page
+ *
+ * Cost of being wrong is nothing: any failure (offline, rate limit, a shape
+ * the API never returned before) leaves the built-in value alone, which is
+ * the value the page would have had anyway. The request is unauthenticated,
+ * counted against the VISITOR's 60/hour, and made once per page load.
+ */
+---
+
+<script>
+  const REPO = "kexhq/kex";
+
+  async function refresh() {
+    const els = document.querySelectorAll<HTMLElement>(
+      "[data-release-tag], [data-release-url]",
+    );
+    if (els.length === 0) return;
+
+    let tag: unknown;
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${REPO}/releases/latest`,
+        {
+          headers: { accept: "application/vnd.github+json" },
+          signal: AbortSignal.timeout(5_000),
+        },
+      );
+      if (!res.ok) return;
+      tag = (await res.json())?.tag_name;
+    } catch {
+      return;
+    }
+    // Only a non-empty string is worth overwriting good build-time content
+    // with; anything else means the API answered something unexpected and the
+    // page is better off as it was built.
+    if (typeof tag !== "string" || tag === "") return;
+
+    const url = `https://github.com/${REPO}/releases/tag/${tag}`;
+    for (const el of els) {
+      if (el.hasAttribute("data-release-tag") && el.textContent?.trim() !== tag) {
+        el.textContent = tag;
+      }
+      if (el.hasAttribute("data-release-url") && el instanceof HTMLAnchorElement) {
+        el.href = url;
+      }
+    }
+  }
+
+  refresh();
+</script>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import Code from "~/components/Code.astro";
+import LatestRelease from "~/components/LatestRelease.astro";
 import { EXAMPLES, exampleFilename } from "~/data/examples";
 import { REPO } from "~/data/site";
 import { latestRelease } from "~/data/site";
@@ -96,6 +97,8 @@ const WHY = [
       <p class="mt-6 font-mono text-[12.5px] text-[var(--color-faint)]">
         <a
           href={release.url}
+          data-release-tag
+          data-release-url
           class="underline decoration-[var(--color-line-strong)] underline-offset-4 hover:decoration-current"
           >{release.tag}</a
         >
@@ -270,7 +273,8 @@ const WHY = [
           class="mt-3 max-w-sm text-[15px] leading-relaxed text-[var(--color-muted)]"
         >
           Two brew commands on macOS or Linux and you're on the current
-          release, {release.tag}. Prefer building from source or Docker? The
+          release, <span data-release-tag>{release.tag}</span>. Prefer building
+          from source or Docker? The
           install guide has you covered.
         </p>
         <a
@@ -306,9 +310,10 @@ const WHY = [
           <pre
             class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#e9e0cf]"><code><span class="tok-fn">brew</span> tap kexhq/tey
 <span class="tok-fn">brew</span> install kexhq/tey/tey
-<span class="tok-fn">tey</span> kex install            <span class="tok-comment"># {release.tag}</span></code></pre>
+<span class="tok-fn">tey</span> kex install            <span class="tok-comment"># <span data-release-tag>{release.tag}</span></span></code></pre>
         </div>
       </div>
     </div>
   </section>
+  <LatestRelease />
 </BaseLayout>

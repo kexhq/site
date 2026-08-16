@@ -3,6 +3,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import ShellBlock from "~/components/ShellBlock.astro";
 import InstallCard from "~/components/InstallCard.astro";
 import OsTabs from "~/components/OsTabs.astro";
+import LatestRelease from "~/components/LatestRelease.astro";
 import { REPO, latestRelease } from "~/data/site";
 
 const release = await latestRelease();
@@ -66,6 +67,8 @@ const CODE =
         latest stable:
         <a
           href={release.url}
+          data-release-tag
+          data-release-url
           class="text-[var(--color-accent-strong)] hover:underline"
         >
           {release.tag}
@@ -295,6 +298,7 @@ const CODE =
       </div>
     </div>
   </section>
+  <LatestRelease />
 </BaseLayout>
 
 <style>

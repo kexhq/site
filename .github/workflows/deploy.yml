@@ -1,9 +1,24 @@
 # Build and deploy the kex.run site to GitHub Pages
 name: Deploy site
 
+# The site reads the latest Kex release from the GitHub API at BUILD time
+# (src/data/site.ts), so what it says about versions is only as fresh as its
+# last deploy. A push is not that signal: releases happen in kexhq/kex, and
+# after 0.3.1 shipped this site went on advertising 0.3.0 because nothing had
+# pushed here since.
+#
+# The visitor's browser re-asks the API and corrects the number in place
+# (src/components/LatestRelease.astro), so the page a person sees is right
+# whatever the deploy says. The daily build is for what that cannot cover: the
+# markup as served — no-JS readers, and anything that reads the HTML rather
+# than running it. A cron rather than a dispatch from the release workflow
+# because this needs no cross-repository token to keep working, and a token is
+# a thing that expires quietly.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
