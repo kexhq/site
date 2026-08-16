@@ -3,6 +3,9 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import Code from "~/components/Code.astro";
 import { EXAMPLES, exampleFilename } from "~/data/examples";
 import { REPO } from "~/data/site";
+import { latestRelease } from "~/data/site";
+
+const release = await latestRelease();
 
 const heroExample = EXAMPLES.find((e) => e.slug === "vectors")!;
 const purityExample = EXAMPLES.find((e) => e.slug === "purity")!;
@@ -91,7 +94,12 @@ const WHY = [
       </div>
 
       <p class="mt-6 font-mono text-[12.5px] text-[var(--color-faint)]">
-        v0.2.0-prealpha · MIT licensed · BEAM
+        <a
+          href={release.url}
+          class="underline decoration-[var(--color-line-strong)] underline-offset-4 hover:decoration-current"
+          >{release.tag}</a
+        >
+        · MIT licensed · BEAM
       </p>
     </div>
 
@@ -256,14 +264,14 @@ const WHY = [
         <h2
           class="text-[24px] font-bold tracking-[-0.01em] text-[var(--color-ink)]"
         >
-          Build it from source
+          Get it with Homebrew
         </h2>
         <p
           class="mt-3 max-w-sm text-[15px] leading-relaxed text-[var(--color-muted)]"
         >
-          The compiler is written in C++20 with minimal external runtime
-          dependencies. Requires <code class="text-[14px]">CMake 3.20+</code> and
-          a <code class="text-[14px]">C++20</code> compiler.
+          Two brew commands on macOS or Linux and you're on the current
+          release, {release.tag}. Prefer building from source or Docker? The
+          install guide has you covered.
         </p>
         <a
           href="/install"
@@ -296,10 +304,9 @@ const WHY = [
             <span class="ml-2 font-mono text-[12px] text-[#a89a78]">bash</span>
           </div>
           <pre
-            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#e9e0cf]"><code><span class="tok-fn">git</span> clone {REPO}.git <span class="tok-op">&&</span> <span class="tok-fn">cd</span> kex
-<span class="tok-fn">make</span> build
-<span class="tok-fn">make</span> run F=examples/fizzbuzz.kex
-<span class="tok-fn">make</span> repl</code></pre>
+            class="scroll-slim overflow-x-auto px-4 py-4 text-[13px] leading-[1.7] text-[#e9e0cf]"><code><span class="tok-fn">brew</span> tap kexhq/tey
+<span class="tok-fn">brew</span> install kexhq/tey/tey
+<span class="tok-fn">tey</span> kex install            <span class="tok-comment"># {release.tag}</span></code></pre>
         </div>
       </div>
     </div>
