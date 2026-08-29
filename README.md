@@ -20,10 +20,12 @@ The site is served at `http://localhost:4321`.
 
 ### Private package access
 
-`@kexhq/kex` (the wasm interpreter) is published to GitHub Packages, not the
-public npm registry. `npm install` needs a `NODE_AUTH_TOKEN` in the
-environment with at least `read:packages` scope on a token that can see the
-`kexhq` org:
+`@kexhq/kex` (the wasm interpreter) is now also published to the
+[public npm registry](https://www.npmjs.com/package/@kexhq/kex), but this
+repo still installs from GitHub Packages — see `.npmrc`'s `@kexhq:registry`
+line — so the org-scoped access grant below keeps working without a config
+change. `npm install` needs a `NODE_AUTH_TOKEN` in the environment with at
+least `read:packages` scope on a token that can see the `kexhq` org:
 
 ```sh
 export NODE_AUTH_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
