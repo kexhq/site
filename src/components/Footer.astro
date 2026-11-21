@@ -1,6 +1,6 @@
 ---
 import Logo from "./Logo.astro";
-import { REPO, repoBlob } from "~/data/site";
+import { REPO, OOPS, REPORT_BUG, repoBlob } from "~/data/site";
 const year = new Date().getFullYear();
 ---
 
@@ -75,6 +75,12 @@ const year = new Date().getFullYear();
               href={repoBlob("CHANGELOG.md")}>Changelog</a
             >
           </li>
+          <li>
+            <a
+              class="text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-accent-strong)]"
+              href={REPORT_BUG}>Report a bug</a
+            >
+          </li>
         </ul>
       </div>
 
@@ -101,6 +107,12 @@ const year = new Date().getFullYear();
             <a
               class="text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-accent-strong)]"
               href="/docs/prelude">Prelude</a
+            >
+          </li>
+          <li>
+            <a
+              class="text-[var(--color-ink-soft)] transition-colors hover:text-[var(--color-accent-strong)]"
+              href={OOPS}>Errors &amp; warnings</a
             >
           </li>
         </ul>

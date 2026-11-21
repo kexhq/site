@@ -7,6 +7,12 @@
 export const REPO = "https://github.com/kexhq/kex";
 export const REPO_BRANCH = "main";
 
+/** Every compiler diagnostic, by its code (kexhq/oops). */
+export const OOPS = "https://oops.kex.run";
+
+/** A new issue on the compiler's tracker. */
+export const REPORT_BUG = `${REPO}/issues/new`;
+
 const strip = (p: string) => p.replace(/^\/+/, "");
 
 /** Link to a directory in the repo, e.g. repoTree("examples"). */
